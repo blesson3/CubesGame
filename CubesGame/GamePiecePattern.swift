@@ -11,7 +11,8 @@ import UIKit
 import ASCFlatUIColor
 
 class GamePiecePattern: UIView {
-    private var pieces: [GamePiece]
+    private let pieces: [GamePiece]
+    let pattern: Pattern
     
     weak var touchesHandler: TouchesHandler?
     
@@ -19,8 +20,9 @@ class GamePiecePattern: UIView {
         return pieces[0].frame.origin
     }
     
-    init(frame: CGRect, pieces: [GamePiece]) {
+    init(frame: CGRect, pattern: Pattern, pieces: [GamePiece]) {
         self.pieces = pieces
+        self.pattern = pattern
         super.init(frame: frame)
     }
     
@@ -52,14 +54,55 @@ class GamePiecePattern: UIView {
 
 class GamePiecePatternGenerator {
     static func generatePattern(pattern: Pattern) -> GamePiecePattern {
+        MBLog("Generating \(pattern)")
         
-        // IDEA:    different colors per number of squares used in pattern
+        var pieces: [GamePiece] = []
+        for _ in 0...pattern.numberOfBlocksRequired() {
+            pieces.append(GamePiece())
+        }
         
-        // TODO: current it only does single piece patterns
-        let piece = GamePiece()
-        let piecePattern = GamePiecePattern(frame: piece.bounds, pieces: [piece])
-        piecePattern.addSubview(piece) // should this be in the GamePiecePattern init?
-        piecePattern.setPiecesBackgroundColor(colorForNumber(1))
+        let piecePattern = GamePiecePattern(frame: CGRect(x: 0, y: 0, width: GameManager.sharedManager.globalPieceSize, height: GameManager.sharedManager.globalPieceSize), pattern: pattern, pieces: pieces)
+        let patternComponents = pattern.encodedPattern().componentsSeparatedByString("|")
+        
+        let piecePlusCushion = GameManager.sharedManager.globalPieceSize+GameManager.sharedManager.globalPieceCushion
+        
+        var maxX: CGFloat = 0
+        var maxY: CGFloat = 0
+        
+        var k = 0
+        for _i in 0...patternComponents.count-1 { // columns
+            let i = CGFloat(_i)
+            
+            let l = patternComponents[_i]
+            let rows = l.characters.map{ String($0) }
+            for _j in 0...rows.count-1 {
+                let j = CGFloat(_j)
+                
+                let c = rows[_j]
+                if c == "1" {
+                    let p = pieces[k]
+                    k += 1
+                    
+                    let x = i*piecePlusCushion
+                    let y = j*piecePlusCushion
+                    
+                    if x+GameManager.sharedManager.globalPieceSize > maxX {
+                        maxX = x+GameManager.sharedManager.globalPieceSize
+                    }
+                    if y+GameManager.sharedManager.globalPieceSize > maxY {
+                        maxY = y+GameManager.sharedManager.globalPieceSize
+                    }
+                    
+                    p.frame.origin = CGPoint(x: x, y: y)
+                    piecePattern.addSubview(p)
+                }
+            }
+        }
+        
+        piecePattern.frame.size = CGSize(width: maxX, height: maxY)
+        piecePattern.backgroundColor = UIColor.redColor().colorWithAlphaComponent(0.4) // TESTING
+        
+        piecePattern.setPiecesBackgroundColor(colorForNumber(pattern.numberOfBlocksRequired()))
         
         return piecePattern
     }
@@ -75,7 +118,7 @@ class GamePiecePatternGenerator {
         case 4:
             return ASCFlatUIColor.greenSeaColor()
         case 5:
-            return ASCFlatUIColor.pumpkinColor()
+            return ASCFlatUIColor.belizeHoleColor()
         default:
             return ASCFlatUIColor.alizarinColor()
         }

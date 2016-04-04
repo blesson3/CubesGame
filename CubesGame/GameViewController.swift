@@ -85,7 +85,7 @@ extension GameViewController: TouchesHandler {
         
         // animate larger
         UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
-            gamePiecePattern.transform = CGAffineTransformMakeScale(1.2, 1.2)
+            gamePiecePattern.transform = CGAffineTransformMakeScale(1.1, 1.1)
             }, completion: nil)
         
         // animate center initially

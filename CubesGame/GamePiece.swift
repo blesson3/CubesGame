@@ -22,6 +22,56 @@ enum Pattern: UInt32 {
     case MediumLine
     case LargeLine
     
+    case Weirdo
+    
+    func numberOfBlocksRequired() -> Int {
+        switch self {
+        case .Single:
+            return 1
+        case .SmallL:
+            return 3
+        case .LargeL:
+            return 5
+        case .SmallSquare:
+            return 3
+        case .LargeSquare:
+            return 9
+        case .SmallLine:
+            return 2
+        case .MediumLine:
+            return 3
+        case .LargeLine:
+            return 4
+            
+        case .Weirdo:
+            return 4
+        }
+    }
+    
+    func encodedPattern() -> String {
+        switch self {
+        case .Single:
+            return "1"
+        case .SmallL:
+            return "1|11"
+        case .LargeL:
+            return "1|1|111"
+        case .SmallSquare:
+            return "11|11"
+        case .LargeSquare:
+            return "111|111|111"
+        case .SmallLine:
+            return "1|1"
+        case .MediumLine:
+            return "1|1|1"
+        case .LargeLine:
+            return "1|1|1|1"
+            
+        case .Weirdo:
+            return "01|11|1"
+        }
+    }
+    
     private static let count: Pattern.RawValue = {
         // find the maximum enum value
         var maxValue: UInt32 = 0
@@ -61,7 +111,7 @@ class GamePiece: UIView {
     
     private func setup() {
         self.backgroundColor = UIColor(red: 195.0/255.0, green: 195.0/255.0, blue: 195.0/255.0, alpha: 1.0)
-        self.layer.cornerRadius = 3.2
+        self.layer.cornerRadius = 4 // 3.2
     }
 }
 

@@ -10,7 +10,6 @@ import Foundation
 import UIKit
 
 class GameBoardView: UIView {
-    
     private var baseSetup: Bool = false
     
     private var blankSpaces: [CGRect] = []
@@ -21,7 +20,7 @@ class GameBoardView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        NSLog("LayoutSubviews Size: \(self.bounds)")
+        NSLog("GameBoard LayoutSubviews Size: \(self.bounds)")
         if !baseSetup {
             baseSetup = true
             setSizeDefaults()
@@ -41,9 +40,9 @@ class GameBoardView: UIView {
         let cushion: CGFloat = GameManager.sharedManager.globalPieceCushion
         let pieceSize = GameManager.sharedManager.globalPieceSize
         
-        for _i in 0...9 {     // row
+        for _i in 0...9 {       // row
             let i = CGFloat(_i)
-            for _j in 0...9 { // column
+            for _j in 0...9 {   // column
                 let j = CGFloat(_j)
                 
                 let piece = GamePiece()
@@ -59,11 +58,4 @@ class GameBoardView: UIView {
         // TODO: implement me
         return true
     }
-    
-    func getGamePiece(pattern pattern: Pattern) -> GamePiece {
-        let piece = GamePiece()
-        // TODO: implement with pattern
-        return piece
-    }
-    
 }
