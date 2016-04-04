@@ -9,10 +9,23 @@
 import Foundation
 import UIKit
 import ASCFlatUIColor
+import SwiftRandom
 
 class GamePiecePattern: UIView {
     private let pieces: [GamePiece]
     let pattern: Pattern
+    
+    private(set) var rotationDegrees: CGFloat = 0
+    
+    var transformedFrame: CGRect {
+        let switchSize = rotationDegrees % 180 == 90 // if its rotated at a 90 or 270 degree angle, switch the width and height
+        let size = CGSize(width: switchSize ? self.bounds.size.height : self.bounds.size.width, height: switchSize ? self.bounds.size.width : self.bounds.size.height)
+        let center = self.center
+        
+        let origin = CGPoint(x: center.x-size.width/2, y: center.y-size.height/2)
+        
+        return CGRect(x: origin.x, y: origin.y, width: size.width, height: size.height)
+    }
     
     weak var touchesHandler: TouchesHandler?
     
@@ -104,7 +117,17 @@ class GamePiecePatternGenerator {
         
         piecePattern.setPiecesBackgroundColor(colorForNumber(pattern.numberOfBlocksRequired()))
         
+        // random rotate
+        let delta = Int.random(0...3)
+        MBLog("Rotating the \(pattern) \(delta*90) degrees")
+        piecePattern.rotationDegrees = CGFloat(90*delta)
+        piecePattern.transform = CGAffineTransformMakeRotation(degreesToRadians(piecePattern.rotationDegrees))
+        
         return piecePattern
+    }
+    
+    private static func degreesToRadians(degrees: CGFloat) -> CGFloat {
+        return CGFloat(M_PI)*degrees/180.0
     }
     
     static private func colorForNumber(num: Int) -> UIColor {

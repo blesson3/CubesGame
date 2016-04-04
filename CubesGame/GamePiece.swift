@@ -25,27 +25,8 @@ enum Pattern: UInt32 {
     case Weirdo
     
     func numberOfBlocksRequired() -> Int {
-        switch self {
-        case .Single:
-            return 1
-        case .SmallL:
-            return 3
-        case .LargeL:
-            return 5
-        case .SmallSquare:
-            return 3
-        case .LargeSquare:
-            return 9
-        case .SmallLine:
-            return 2
-        case .MediumLine:
-            return 3
-        case .LargeLine:
-            return 4
-            
-        case .Weirdo:
-            return 4
-        }
+        // count the number of 1s in the encoded string
+        return self.encodedPattern().characters.filter({ $0 == "1"}).count
     }
     
     func encodedPattern() -> String {

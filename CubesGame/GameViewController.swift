@@ -21,6 +21,7 @@ class GameViewController: UIViewController {
     
     private var currentPage: [GamePiecePattern] = []
     private var patternsStartingCenters: [GamePiecePattern:CGPoint] = [:]
+    private var patternStartingTransforms: [GamePiecePattern:CGAffineTransform] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,15 +57,25 @@ class GameViewController: UIViewController {
         
         currentPage = page
         
-        // animate each seperately on screen
-        var i: CGFloat = 0
+        // TESTING
+//        UIView.animateWithDuration(0.2, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: .CurveEaseInOut, animations: {
+//            page[0].center = CGPointMake(self.piecesSliderView.bounds.width*3/16, self.piecesSliderView.center.y)
+//            page[1].center = CGPointMake(self.piecesSliderView.bounds.width*8/16, self.piecesSliderView.center.y)
+//            page[2].center = CGPointMake(self.piecesSliderView.bounds.width*13/16, self.piecesSliderView.center.y)
+//            }, completion: { (finished) in
+//        })
+        
+        // animate each seperately on screen at x points: 3/16 | 8/16 | 13/16
+        var i: CGFloat = 0 // index
+        var j: CGFloat = 3 // x delta
         for piece in page {
             UIView.animateWithDuration(0.2, delay: 0.07*Double(CGFloat(page.count)-i), usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: .CurveEaseInOut, animations: {
-                piece.center = CGPointMake(self.piecesSliderView.bounds.width*(i+1)/4, self.piecesSliderView.center.y)
+                piece.center = CGPointMake(self.piecesSliderView.bounds.width*j/16, self.piecesSliderView.center.y)
                 }, completion: { (finished) in
             })
             
             i += 1
+            j += 5
         }
     }
     
@@ -80,12 +91,13 @@ extension GameViewController: TouchesHandler {
         let point = t.locationInView(self.view)
         let newCenter = CGPoint(x: point.x, y: point.y-80)
         
-        // record initial center
+        // record initial center and transform
         patternsStartingCenters[gamePiecePattern] = gamePiecePattern.center
+        patternStartingTransforms[gamePiecePattern] = gamePiecePattern.transform
         
         // animate larger
         UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
-            gamePiecePattern.transform = CGAffineTransformMakeScale(1.1, 1.1)
+            gamePiecePattern.transform = CGAffineTransformConcat(gamePiecePattern.transform, CGAffineTransformMakeScale(1.1, 1.1))
             }, completion: nil)
         
         // animate center initially
@@ -108,6 +120,13 @@ extension GameViewController: TouchesHandler {
         if gamePiecePattern.frame.intersects(gameBoardView.frame) && gameBoardView.canPlaceGamePiecePattern(gamePiecePattern, point: self.view.convertRect(gamePiecePattern.frame, toView: gameBoardView).origin) {
             // pattern was placed onto game board
             
+            // remove pattern from current page
+            currentPage.removeAtIndex(currentPage.indexOf(gamePiecePattern)!)
+            
+            // when there are no more pieces on the current page, generate a new page with a delay of 1 second
+            if currentPage.count == 0 {
+                nextPage()
+            }
         }
         else {
             // throw that piece back to where it belongs
@@ -122,7 +141,7 @@ extension GameViewController: TouchesHandler {
         
         // shink back to normal size
         UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
-            gamePiecePattern.transform = CGAffineTransformIdentity
+            gamePiecePattern.transform = self.patternStartingTransforms[gamePiecePattern]!
             }, completion: nil)
         
         

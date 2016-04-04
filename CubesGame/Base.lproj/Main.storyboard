@@ -20,25 +20,25 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MKe-Zn-fgo" userLabel="Board" customClass="GameBoardView" customModule="CubesGame" customModuleProvider="target">
-                                <rect key="frame" x="19" y="120" width="282" height="282"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <rect key="frame" x="19" y="114" width="282" height="282"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="MKe-Zn-fgo" secondAttribute="height" multiplier="1:1" id="zpC-A2-zY9"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Moy-XB-Bc2" userLabel="Pieces Slider" customClass="PiecesSliderView" customModule="CubesGame" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="473" width="320" height="95"/>
-                                <color key="backgroundColor" red="0.78823529410000004" green="0.27450980390000002" blue="0.1333333333" alpha="0.95999999999999996" colorSpace="calibratedRGB"/>
-                            </view>
-                            <adBannerView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aBH-er-LTU">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
+                            <adBannerView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" translatesAutoresizingMaskIntoConstraints="NO" id="aBH-er-LTU">
+                                <rect key="frame" x="-80" y="0.0" width="480" height="66"/>
                             </adBannerView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Moy-XB-Bc2" userLabel="Pieces Slider" customClass="PiecesSliderView" customModule="CubesGame" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="412" width="320" height="156"/>
+                                <color key="backgroundColor" red="0.78823529410000004" green="0.27450980390000002" blue="0.1333333333" alpha="0.37137522163120557" colorSpace="calibratedRGB"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="MKe-Zn-fgo" secondAttribute="trailing" constant="19" id="4ar-TR-lmG"/>
-                            <constraint firstItem="Moy-XB-Bc2" firstAttribute="top" secondItem="MKe-Zn-fgo" secondAttribute="bottom" constant="70" id="574-vV-Sgt"/>
-                            <constraint firstItem="MKe-Zn-fgo" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-23" id="Ibg-Lv-IBO"/>
+                            <constraint firstItem="Moy-XB-Bc2" firstAttribute="top" secondItem="MKe-Zn-fgo" secondAttribute="bottom" constant="16" id="574-vV-Sgt"/>
+                            <constraint firstItem="MKe-Zn-fgo" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-29" id="Ibg-Lv-IBO"/>
                             <constraint firstAttribute="trailing" secondItem="Moy-XB-Bc2" secondAttribute="trailing" id="KYt-bP-fkw"/>
                             <constraint firstItem="Moy-XB-Bc2" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="MEb-LH-1Rc"/>
                             <constraint firstItem="MKe-Zn-fgo" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="19" id="kpE-qH-U8g"/>
