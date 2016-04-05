@@ -18,6 +18,9 @@ class GameManager {
     
     var globalPieceSize: CGFloat = 0.0
     var globalPieceCushion: CGFloat = 0.0
+    
+    // if this is changed from (3), the algorithm for piece placement within the slide needs changing
+    var sliderPageSize: Int = 3
 }
 
 // Global helper function

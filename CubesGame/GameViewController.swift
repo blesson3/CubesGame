@@ -42,21 +42,22 @@ class GameViewController: UIViewController {
     override func viewDidAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(nextPage), userInfo: nil, repeats: false)
+        // delay one second, then fill page
+        NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(fillPage), userInfo: nil, repeats: false)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
-    func nextPage() {
-        guard currentPage.count == 0 else { MBLog("Cannot create a next page because there are still pieces on the current page"); return }
+    func fillPage() {
+        // ensure there are spaces to fill
+        guard currentPage.count < GameManager.sharedManager.sliderPageSize else { return }
         
-        // Create three new game patterns offscreen
-        // Then slide them onscreen
+        let difference = GameManager.sharedManager.sliderPageSize-currentPage.count
         
-        var page: [GamePiecePattern] = []
-        for _ in 0...2 {
+        // create new pieces
+        for _ in 0..<difference {
             let p = Pattern.randomPattern()
             
             let pattern = GamePiecePatternGenerator.generatePatternWRandomRotate(p)
@@ -64,24 +65,14 @@ class GameViewController: UIViewController {
             pattern.center = CGPoint(x: -pattern.bounds.width*1.5, y: piecesSliderView.center.y)
             self.view.addSubview(pattern)
             
-            page.append(pattern)
+            currentPage.insert(pattern, atIndex: 0)
         }
-        
-        currentPage = page
-        
-        // TESTING
-//        UIView.animateWithDuration(0.2, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: .CurveEaseInOut, animations: {
-//            page[0].center = CGPointMake(self.piecesSliderView.bounds.width*3/16, self.piecesSliderView.center.y)
-//            page[1].center = CGPointMake(self.piecesSliderView.bounds.width*8/16, self.piecesSliderView.center.y)
-//            page[2].center = CGPointMake(self.piecesSliderView.bounds.width*13/16, self.piecesSliderView.center.y)
-//            }, completion: { (finished) in
-//        })
         
         // animate each seperately on screen at x points: 3/16 | 8/16 | 13/16
         var i: CGFloat = 0 // index
         var j: CGFloat = 3 // x delta
-        for piece in page {
-            UIView.animateWithDuration(0.2, delay: 0.07*Double(CGFloat(page.count)-i), usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: .CurveEaseInOut, animations: {
+        for piece in currentPage {
+            UIView.animateWithDuration(0.2, delay: 0.07*Double(CGFloat(currentPage.count)-i), usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: .CurveEaseInOut, animations: {
                 piece.center = CGPointMake(self.piecesSliderView.bounds.width*j/16, self.piecesSliderView.center.y)
                 }, completion: { (finished) in
             })
@@ -221,10 +212,8 @@ extension GameViewController: TouchesHandler {
                 currentPage.removeAtIndex(i)
             }
             
-            // when there are no more pieces on the current page, generate a new page with a delay of 1 second
-            if currentPage.count == 0 {
-                nextPage()
-            }
+            // fill the gaps in the page with new blocks
+            fillPage()
         }
         else {
             // throw that piece back to where it belongs
