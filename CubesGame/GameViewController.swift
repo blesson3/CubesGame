@@ -22,10 +22,11 @@ class GameViewController: UIViewController {
     private var currentPage: [GamePiecePattern] = []
     private var patternsStartingCenters: [GamePiecePattern:CGPoint] = [:]
     
+    private var previousOrientation: UIDeviceOrientation = .Unknown
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        GameSoundManager.sharedManager.initSounds()
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -34,12 +35,8 @@ class GameViewController: UIViewController {
         gameBoardView.backgroundColor = UIColor.clearColor()
         piecesSliderView.backgroundColor = UIColor.clearColor()
         
-        // IDEA: when using orientation to change shape, generate the same pattern rotated the in the new direction, transform it so it looks like the old one, then transform it so it looks like its rotating
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(orientationDidChange(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
-    }
-    
-    func orientationDidChange(notification: NSNotification) {
-        MBLog("Orientation changed! \(notification.userInfo)")
+        // Removed orientation changing from gameplay for now
+//        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(orientationDidChange(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -62,7 +59,7 @@ class GameViewController: UIViewController {
         for _ in 0...2 {
             let p = Pattern.randomPattern()
             
-            let pattern = GamePiecePatternGenerator.generatePattern(p)
+            let pattern = GamePiecePatternGenerator.generatePatternWRandomRotate(p)
             pattern.touchesHandler = self
             pattern.center = CGPoint(x: -pattern.bounds.width*1.5, y: piecesSliderView.center.y)
             self.view.addSubview(pattern)
@@ -98,6 +95,70 @@ class GameViewController: UIViewController {
         return true
     }
 }
+
+// MARK: Orientation Handler
+
+extension GameViewController {
+    private enum OrientationRotate {
+        case Left
+        case Right
+    }
+    
+    func orientationDidChange(notification: NSNotification) {
+        let orientation = UIDevice.currentDevice().orientation
+        
+        // if it was portrait, but now it is landscape, turn the blocks
+        if (previousOrientation.isPortrait && orientation.isLandscape) || (previousOrientation.isLandscape && orientation.isPortrait) {
+            rotatePage(previousOrientation == .LandscapeLeft && orientation == .Portrait ? .Right : .Left)
+        }
+        
+        previousOrientation = orientation
+        MBLog("Orientation changed! \(orientation.rawValue)")
+    }
+    
+    private func rotatePage(rotate: OrientationRotate) {
+        
+        var rotatedPage: [GamePiecePattern] = []
+        
+        for piecePattern in currentPage {
+            
+            // get the new rotated pattern
+            // generate the pattern
+            // add to view with same center
+            // transform to look like original
+            // animate transform for effect
+            
+            let nextRotation = rotate == .Right ? piecePattern.rotation.nextRight :  piecePattern.rotation.nextLeft
+            let rotatedPattern = GamePiecePatternGenerator.generatePattern(piecePattern.pattern, rotate: nextRotation)
+            rotatedPattern.touchesHandler = self
+            rotatedPattern.center = piecePattern.center
+            rotatedPattern.transform = CGAffineTransformMakeRotation(GamePiecePatternGenerator.degreesToRadians(rotate == .Right ? -90 : 90)) // artifically rotate backwards to simulate the original
+            self.view.addSubview(rotatedPattern)
+            
+            rotatedPage.append(rotatedPattern)
+            
+            // remove the original
+            piecePattern.removeFromSuperview()
+        }
+        
+        currentPage.removeAll()
+        currentPage.appendContentsOf(rotatedPage)
+        
+        UIView.animateWithDuration(0.4, animations: {
+        //UIView.animateWithDuration(1.0, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.1, options: .CurveEaseInOut, animations: {
+            
+            for rp in rotatedPage {
+                rp.transform = CGAffineTransformIdentity
+            }
+            
+            }) { (finished) in
+                
+        }
+        
+    }
+}
+
+// MARK: GamePiecePattern TouchesHandler
 
 extension GameViewController: TouchesHandler {
     
@@ -180,9 +241,5 @@ extension GameViewController: TouchesHandler {
         UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
             gamePiecePattern.transform = CGAffineTransformIdentity
             }, completion: nil)
-        
     }
 }
-
-
-

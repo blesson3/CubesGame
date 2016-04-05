@@ -19,7 +19,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Debug.enableColorLogging()
         }
         
-        UIDevice.currentDevice().beginGeneratingDeviceOrientationNotifications()
+        GameSoundManager.sharedManager.initSounds()
+        
+        // generate notifications that the GameViewController will listen for, but...
+        // Removed orientation changing from gameplay for now
+//        UIDevice.currentDevice().beginGeneratingDeviceOrientationNotifications()
         
         return true
     }

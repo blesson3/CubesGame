@@ -63,6 +63,32 @@ enum Pattern: UInt32 {
         case Left
         case Flip
         
+        var nextRight: PatternRotate {
+            switch self {
+            case .None:
+                return .Right
+            case .Right:
+                return .Flip
+            case .Flip:
+                return .Left
+            case .Left:
+                return .None
+            }
+        }
+        
+        var nextLeft: PatternRotate {
+            switch self {
+            case .None:
+                return .Left
+            case .Right:
+                return .None
+            case .Flip:
+                return .Right
+            case .Left:
+                return .Flip
+            }
+        }
+        
         private static let count: PatternRotate.RawValue = {
             // find the maximum enum value
             var maxValue: UInt32 = 0
@@ -245,11 +271,15 @@ class GamePiecePattern: UIView {
 // MARK: GamePiecePatternGenerator
 
 class GamePiecePatternGenerator {
-    static func generatePattern(pattern: Pattern) -> GamePiecePattern {
-        
+    
+    static func generatePatternWRandomRotate(pattern: Pattern) -> GamePiecePattern {
         // get randomly rotated pattern
         let randomRotation = Pattern.PatternRotate.randomRotation()
-        MBLog("Generating \(pattern) with rotation \(randomRotation)")
+        return generatePattern(pattern, rotate: randomRotation)
+    }
+    
+    static func generatePattern(pattern: Pattern, rotate: Pattern.PatternRotate) -> GamePiecePattern {
+        MBLog("Generating \(pattern) with rotation \(rotate)")
         
         var pieces: [GamePiece] = []
         for _ in 0..<pattern.numberOfBlocksRequired() {
@@ -257,7 +287,7 @@ class GamePiecePatternGenerator {
         }
         
         // create piecePattern
-        let piecePattern = GamePiecePattern(frame: CGRect(x: 0, y: 0, width: GameManager.sharedManager.globalPieceSize, height: GameManager.sharedManager.globalPieceSize), pattern: pattern, rotation: randomRotation, pieces: pieces)
+        let piecePattern = GamePiecePattern(frame: CGRect(x: 0, y: 0, width: GameManager.sharedManager.globalPieceSize, height: GameManager.sharedManager.globalPieceSize), pattern: pattern, rotation: rotate, pieces: pieces)
         
         let piecePlusCushion = GameManager.sharedManager.globalPieceSize+GameManager.sharedManager.globalPieceCushion
         
@@ -265,7 +295,7 @@ class GamePiecePatternGenerator {
         var maxY: CGFloat = 0
         
         // get the components of the pattern
-        let patternComponents = pattern.rotatedEncodedPattern(randomRotation).componentsSeparatedByString("|")
+        let patternComponents = pattern.rotatedEncodedPattern(rotate).componentsSeparatedByString("|")
         
         var k = 0
         for _i in 0..<patternComponents.count { // columns
@@ -306,7 +336,7 @@ class GamePiecePatternGenerator {
         return piecePattern
     }
     
-    private static func degreesToRadians(degrees: CGFloat) -> CGFloat {
+    static func degreesToRadians(degrees: CGFloat) -> CGFloat {
         return CGFloat(M_PI)*degrees/180.0
     }
     
