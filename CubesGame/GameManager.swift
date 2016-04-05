@@ -12,6 +12,10 @@ import UIKit
 class GameManager {
     static let sharedManager = GameManager()
     
+    var globalPieceSizePlusCushion: CGFloat {
+        return globalPieceSize+globalPieceCushion
+    }
+    
     var globalPieceSize: CGFloat = 0.0
     var globalPieceCushion: CGFloat = 0.0
 }

@@ -21,10 +21,16 @@ class GameViewController: UIViewController {
     
     private var currentPage: [GamePiecePattern] = []
     private var patternsStartingCenters: [GamePiecePattern:CGPoint] = [:]
-    private var patternStartingTransforms: [GamePiecePattern:CGAffineTransform] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        gameBoardView.backgroundColor = UIColor.clearColor()
+        piecesSliderView.backgroundColor = UIColor.clearColor()
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -93,11 +99,10 @@ extension GameViewController: TouchesHandler {
         
         // record initial center and transform
         patternsStartingCenters[gamePiecePattern] = gamePiecePattern.center
-        patternStartingTransforms[gamePiecePattern] = gamePiecePattern.transform
         
         // animate larger
         UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
-            gamePiecePattern.transform = CGAffineTransformConcat(gamePiecePattern.transform, CGAffineTransformMakeScale(1.1, 1.1))
+            gamePiecePattern.transform = CGAffineTransformMakeScale(1.1, 1.1)
             }, completion: nil)
         
         // animate center initially
@@ -117,11 +122,29 @@ extension GameViewController: TouchesHandler {
     func gamePieceTouchesEnded(gamePiecePattern: GamePiecePattern, touches: Set<UITouch>, withEvent event: UIEvent?) {
         
         // check if the pattern was placed on the board and it can be placed there
-        if gamePiecePattern.frame.intersects(gameBoardView.frame) && gameBoardView.canPlaceGamePiecePattern(gamePiecePattern, point: self.view.convertRect(gamePiecePattern.frame, toView: gameBoardView).origin) {
-            // pattern was placed onto game board
+        let convertedPiecePatternRect = self.view.convertRect(gamePiecePattern.frame, toView: gameBoardView)
+        if gamePiecePattern.frame.intersects(gameBoardView.frame) && gameBoardView.canPlaceGamePiecePattern(gamePiecePattern, frameInBoard: convertedPiecePatternRect) {
+            // place pattern onto the gameview
+            var nextOrigin = gameBoardView.placeGamePiecePattern(gamePiecePattern, frameInBoard: convertedPiecePatternRect)
+            // we must convert the frame given, to a frame in self.view
+            nextOrigin = gameBoardView.convertPoint(nextOrigin, toView: self.view)
+            
+            // with the size transform larger, the rect gets messed up. The real origin is the width halved * (1-transformDelta)
+            // in this case the transform delta is 1.1 so 0.1 is used
+            nextOrigin = CGPointMake(nextOrigin.x-gamePiecePattern.bounds.size.width/2*0.1, nextOrigin.y-gamePiecePattern.bounds.size.height/2*0.1)
+            
+            UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
+                gamePiecePattern.frame.origin = nextOrigin
+                }, completion: { (finished) in
+                     self.gameBoardView.updateBoardColoring() // does the work of setting the background square to the color of the placed piece
+                     gamePiecePattern.removeFromSuperview()
+            })
             
             // remove pattern from current page
-            currentPage.removeAtIndex(currentPage.indexOf(gamePiecePattern)!)
+            // safer than assuming that the pattern is on the page, sort of testing
+            if let i = currentPage.indexOf(gamePiecePattern) {
+                currentPage.removeAtIndex(i)
+            }
             
             // when there are no more pieces on the current page, generate a new page with a delay of 1 second
             if currentPage.count == 0 {
@@ -141,9 +164,8 @@ extension GameViewController: TouchesHandler {
         
         // shink back to normal size
         UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
-            gamePiecePattern.transform = self.patternStartingTransforms[gamePiecePattern]!
+            gamePiecePattern.transform = CGAffineTransformIdentity
             }, completion: nil)
-        
         
     }
 }
