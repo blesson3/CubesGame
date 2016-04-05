@@ -24,6 +24,8 @@ class GameViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        GameSoundManager.sharedManager.initSounds()
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -31,6 +33,13 @@ class GameViewController: UIViewController {
         
         gameBoardView.backgroundColor = UIColor.clearColor()
         piecesSliderView.backgroundColor = UIColor.clearColor()
+        
+        // IDEA: when using orientation to change shape, generate the same pattern rotated the in the new direction, transform it so it looks like the old one, then transform it so it looks like its rotating
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(orientationDidChange(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
+    }
+    
+    func orientationDidChange(notification: NSNotification) {
+        MBLog("Orientation changed! \(notification.userInfo)")
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -136,9 +145,14 @@ extension GameViewController: TouchesHandler {
             UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
                 gamePiecePattern.frame.origin = nextOrigin
                 }, completion: { (finished) in
-                     self.gameBoardView.updateBoardColoring() // does the work of setting the background square to the color of the placed piece
-                     gamePiecePattern.removeFromSuperview()
+                    self.gameBoardView.updateBoardColoring() // does the work of setting the background square to the color of the placed piece
+                    gamePiecePattern.removeFromSuperview()   // remove the piece as we do not need it anymore
             })
+            
+            delay(0.1) {
+                // play placement sound effect
+                GameSoundManager.sharedManager.playRandomPlacementSound()
+            }
             
             // remove pattern from current page
             // safer than assuming that the pattern is on the page, sort of testing

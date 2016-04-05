@@ -20,6 +20,11 @@
 		D9EA665F1CB1AAEC000CCF29 /* Debug.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EA665E1CB1AAEC000CCF29 /* Debug.swift */; };
 		D9EA66611CB1B28A000CCF29 /* PiecesSliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EA66601CB1B28A000CCF29 /* PiecesSliderView.swift */; };
 		D9EA66631CB1BA5A000CCF29 /* GameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EA66621CB1BA5A000CCF29 /* GameManager.swift */; };
+		D9F28EBF1CB33BC900BE4FFB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9F28EBE1CB33BC900BE4FFB /* AVFoundation.framework */; };
+		D9F28EC31CB33C4E00BE4FFB /* pop1.aiff in Resources */ = {isa = PBXBuildFile; fileRef = D9F28EC01CB33C4E00BE4FFB /* pop1.aiff */; };
+		D9F28EC41CB33C4E00BE4FFB /* pop2.aiff in Resources */ = {isa = PBXBuildFile; fileRef = D9F28EC11CB33C4E00BE4FFB /* pop2.aiff */; };
+		D9F28EC51CB33C4E00BE4FFB /* pop3.aiff in Resources */ = {isa = PBXBuildFile; fileRef = D9F28EC21CB33C4E00BE4FFB /* pop3.aiff */; };
+		D9F28EC81CB33CF600BE4FFB /* GameSoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F28EC71CB33CF600BE4FFB /* GameSoundManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +43,11 @@
 		D9EA665E1CB1AAEC000CCF29 /* Debug.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Debug.swift; sourceTree = "<group>"; };
 		D9EA66601CB1B28A000CCF29 /* PiecesSliderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PiecesSliderView.swift; sourceTree = "<group>"; };
 		D9EA66621CB1BA5A000CCF29 /* GameManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameManager.swift; sourceTree = "<group>"; };
+		D9F28EBE1CB33BC900BE4FFB /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		D9F28EC01CB33C4E00BE4FFB /* pop1.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = pop1.aiff; sourceTree = "<group>"; };
+		D9F28EC11CB33C4E00BE4FFB /* pop2.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = pop2.aiff; sourceTree = "<group>"; };
+		D9F28EC21CB33C4E00BE4FFB /* pop3.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = pop3.aiff; sourceTree = "<group>"; };
+		D9F28EC71CB33CF600BE4FFB /* GameSoundManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameSoundManager.swift; sourceTree = "<group>"; };
 		FE231D1B2DD9E541B66A3BD7 /* Pods-CubesGame.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CubesGame.debug.xcconfig"; path = "Pods/Target Support Files/Pods-CubesGame/Pods-CubesGame.debug.xcconfig"; sourceTree = "<group>"; };
 		FF642E505D099092F2F4A6B8 /* Pods-CubesGame.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CubesGame.release.xcconfig"; path = "Pods/Target Support Files/Pods-CubesGame/Pods-CubesGame.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -47,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9F28EBF1CB33BC900BE4FFB /* AVFoundation.framework in Frameworks */,
 				D9A6CBA21CB1EE3B00B7A6DE /* iAd.framework in Frameworks */,
 				9B4C26E5F3CC878631ABB9D2 /* Pods_CubesGame.framework in Frameworks */,
 			);
@@ -78,6 +89,7 @@
 			children = (
 				D92442131CB19F68003DA666 /* AppDelegate.swift */,
 				D9EA66621CB1BA5A000CCF29 /* GameManager.swift */,
+				D9F28EC71CB33CF600BE4FFB /* GameSoundManager.swift */,
 				D92442151CB19F68003DA666 /* GameViewController.swift */,
 				D9EA665A1CB1A5E4000CCF29 /* GameBoardView.swift */,
 				D9A6CB9F1CB1DE8900B7A6DE /* GamePiecePattern.swift */,
@@ -88,8 +100,19 @@
 				D924421C1CB19F68003DA666 /* LaunchScreen.storyboard */,
 				D924421F1CB19F68003DA666 /* Info.plist */,
 				D9EA665E1CB1AAEC000CCF29 /* Debug.swift */,
+				D9F28EC61CB33C5100BE4FFB /* audio files */,
 			);
 			path = CubesGame;
+			sourceTree = "<group>";
+		};
+		D9F28EC61CB33C5100BE4FFB /* audio files */ = {
+			isa = PBXGroup;
+			children = (
+				D9F28EC01CB33C4E00BE4FFB /* pop1.aiff */,
+				D9F28EC11CB33C4E00BE4FFB /* pop2.aiff */,
+				D9F28EC21CB33C4E00BE4FFB /* pop3.aiff */,
+			);
+			name = "audio files";
 			sourceTree = "<group>";
 		};
 		F12D2AF6105033FD4B68826F /* Pods */ = {
@@ -104,6 +127,7 @@
 		FD246F6450BF3051932A32FD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D9F28EBE1CB33BC900BE4FFB /* AVFoundation.framework */,
 				D9A6CBA11CB1EE3B00B7A6DE /* iAd.framework */,
 				3322A3906390DAC98348656E /* Pods_CubesGame.framework */,
 			);
@@ -172,8 +196,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				D924421E1CB19F68003DA666 /* LaunchScreen.storyboard in Resources */,
+				D9F28EC41CB33C4E00BE4FFB /* pop2.aiff in Resources */,
+				D9F28EC31CB33C4E00BE4FFB /* pop1.aiff in Resources */,
 				D924421B1CB19F68003DA666 /* Assets.xcassets in Resources */,
 				D92442191CB19F68003DA666 /* Main.storyboard in Resources */,
+				D9F28EC51CB33C4E00BE4FFB /* pop3.aiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,6 +267,7 @@
 				D9EA665D1CB1A635000CCF29 /* GamePiece.swift in Sources */,
 				D9EA665B1CB1A5E4000CCF29 /* GameBoardView.swift in Sources */,
 				D9A6CBA01CB1DE8900B7A6DE /* GamePiecePattern.swift in Sources */,
+				D9F28EC81CB33CF600BE4FFB /* GameSoundManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

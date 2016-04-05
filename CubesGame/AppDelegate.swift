@@ -19,6 +19,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Debug.enableColorLogging()
         }
         
+        UIDevice.currentDevice().beginGeneratingDeviceOrientationNotifications()
+        
         return true
     }
 
