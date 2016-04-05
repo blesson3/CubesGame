@@ -11,6 +11,8 @@ import UIKit
 
 class GamePiece: UIView {
     
+    static let defaultBackgroundColor: UIColor = UIColor(red: 195.0/255.0, green: 195.0/255.0, blue: 195.0/255.0, alpha: 1.0)
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -31,7 +33,7 @@ class GamePiece: UIView {
     }
     
     private func setup() {
-        self.backgroundColor = UIColor(red: 195.0/255.0, green: 195.0/255.0, blue: 195.0/255.0, alpha: 1.0)
+        self.backgroundColor = GamePiece.defaultBackgroundColor
         self.layer.cornerRadius = 4 // 3.2
     }
 }

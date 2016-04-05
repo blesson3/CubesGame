@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Fabric
+import Crashlytics
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -20,6 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         GameSoundManager.sharedManager.initSounds()
+        
+        Fabric.with([Crashlytics.self])
         
         // generate notifications that the GameViewController will listen for, but...
         // Removed orientation changing from gameplay for now

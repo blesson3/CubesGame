@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -26,21 +25,36 @@
                                     <constraint firstAttribute="width" secondItem="MKe-Zn-fgo" secondAttribute="height" multiplier="1:1" id="zpC-A2-zY9"/>
                                 </constraints>
                             </view>
-                            <adBannerView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" translatesAutoresizingMaskIntoConstraints="NO" id="aBH-er-LTU">
-                                <rect key="frame" x="-80" y="0.0" width="480" height="66"/>
-                            </adBannerView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Moy-XB-Bc2" userLabel="Pieces Slider" customClass="PiecesSliderView" customModule="CubesGame" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="412" width="320" height="156"/>
                                 <color key="backgroundColor" red="0.78823529410000004" green="0.27450980390000002" blue="0.1333333333" alpha="0.37137522163120557" colorSpace="calibratedRGB"/>
                             </view>
+                            <button opaque="NO" alpha="0.69999999999999996" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="shR-H0-Yug" userLabel="ResetButton">
+                                <rect key="frame" x="276" y="79" width="25" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="shR-H0-Yug" secondAttribute="height" multiplier="115:99" id="RSb-E6-56x"/>
+                                    <constraint firstAttribute="width" constant="25" id="b4H-bo-B4B"/>
+                                </constraints>
+                                <state key="normal" backgroundImage="demoreset"/>
+                                <connections>
+                                    <action selector="resetButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="FkU-TE-0AO"/>
+                                </connections>
+                            </button>
+                            <adBannerView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aBH-er-LTU">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="50"/>
+                            </adBannerView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="MKe-Zn-fgo" secondAttribute="trailing" constant="19" id="4ar-TR-lmG"/>
                             <constraint firstItem="Moy-XB-Bc2" firstAttribute="top" secondItem="MKe-Zn-fgo" secondAttribute="bottom" constant="16" id="574-vV-Sgt"/>
+                            <constraint firstAttribute="trailing" secondItem="aBH-er-LTU" secondAttribute="trailing" id="8Gp-zA-llN"/>
                             <constraint firstItem="MKe-Zn-fgo" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-29" id="Ibg-Lv-IBO"/>
                             <constraint firstAttribute="trailing" secondItem="Moy-XB-Bc2" secondAttribute="trailing" id="KYt-bP-fkw"/>
+                            <constraint firstItem="MKe-Zn-fgo" firstAttribute="top" secondItem="shR-H0-Yug" secondAttribute="bottom" constant="14" id="LOP-Gb-Hxk"/>
                             <constraint firstItem="Moy-XB-Bc2" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="MEb-LH-1Rc"/>
+                            <constraint firstAttribute="trailing" secondItem="shR-H0-Yug" secondAttribute="trailing" constant="19" id="Xmd-PH-8SH"/>
+                            <constraint firstItem="aBH-er-LTU" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Yyv-N3-ssL"/>
                             <constraint firstItem="MKe-Zn-fgo" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="19" id="kpE-qH-U8g"/>
                             <constraint firstItem="aBH-er-LTU" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="mGT-bP-x2i"/>
                             <constraint firstAttribute="topMargin" secondItem="aBH-er-LTU" secondAttribute="top" id="mt9-eW-d62"/>
@@ -52,11 +66,15 @@
                     <connections>
                         <outlet property="gameBoardView" destination="MKe-Zn-fgo" id="R6v-O9-J73"/>
                         <outlet property="piecesSliderView" destination="Moy-XB-Bc2" id="cqI-TD-6j6"/>
+                        <outlet property="resetButton" destination="shR-H0-Yug" id="BdH-G1-73p"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="812" y="490"/>
+            <point key="canvasLocation" x="718" y="506"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="demoreset" width="230" height="198"/>
+    </resources>
 </document>

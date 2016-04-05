@@ -18,6 +18,7 @@ class GameViewController: UIViewController {
 
     @IBOutlet weak var gameBoardView: GameBoardView!
     @IBOutlet weak var piecesSliderView: PiecesSliderView!
+    @IBOutlet weak var resetButton: UIButton!
     
     private var currentPage: [GamePiecePattern] = []
     private var patternsStartingCenters: [GamePiecePattern:CGPoint] = [:]
@@ -63,6 +64,7 @@ class GameViewController: UIViewController {
             let pattern = GamePiecePatternGenerator.generatePatternWRandomRotate(p)
             pattern.touchesHandler = self
             pattern.center = CGPoint(x: -pattern.bounds.width*1.5, y: piecesSliderView.center.y)
+            pattern.transform = CGAffineTransformMakeScale(0.9, 0.9)
             self.view.addSubview(pattern)
             
             currentPage.insert(pattern, atIndex: 0)
@@ -72,13 +74,37 @@ class GameViewController: UIViewController {
         var i: CGFloat = 0 // index
         var j: CGFloat = 3 // x delta
         for piece in currentPage {
-            UIView.animateWithDuration(0.2, delay: 0.07*Double(CGFloat(currentPage.count)-i), usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: .CurveEaseInOut, animations: {
+            UIView.animateWithDuration(0.35, delay: 0.07*Double(CGFloat(currentPage.count)-i), usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: .CurveEaseInOut, animations: {
                 piece.center = CGPointMake(self.piecesSliderView.bounds.width*j/16, self.piecesSliderView.center.y)
                 }, completion: { (finished) in
             })
             
             i += 1
             j += 5
+        }
+    }
+    
+    @IBAction func resetButtonPressed(sender: AnyObject) {
+        gameBoardView.resetBoard()
+        
+        // animate each seperately on screen at x points: 3/16 | 8/16 | 13/16, but plus 16 for each numerator because we are animating them offscreen
+        var i: CGFloat = 0 // index
+        var j: CGFloat = 3 // x delta
+        for piece in currentPage {
+            UIView.animateWithDuration(0.35, delay: 0.07*Double(CGFloat(currentPage.count)-i), usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: .CurveEaseInOut, animations: {
+                piece.center = CGPointMake(self.piecesSliderView.bounds.width+(self.piecesSliderView.bounds.width*j/16), self.piecesSliderView.center.y)
+                }, completion: { (finished) in
+                    piece.removeFromSuperview()
+            })
+            
+            i += 1
+            j += 5
+        }
+        
+        currentPage.removeAll()
+        
+        delay(0.5) {
+            self.fillPage()
         }
     }
     

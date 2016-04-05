@@ -78,7 +78,7 @@ extension GameBoardView {
     func canPlaceGamePiecePattern(gamePiecePattern: GamePiecePattern, frameInBoard: CGRect) -> Bool {
         let initialCoord = getClosestCoords(frameInBoard)
         
-        MBLog("Closest initial coord (r, c) (\(initialCoord.row), \(initialCoord.column))")
+//        MBLog("Closest initial coord (r, c) (\(initialCoord.row), \(initialCoord.column))")
         
         // incorporate pattern
         let pattern = gamePiecePattern.pattern.rotatedEncodedPattern(gamePiecePattern.rotation)
@@ -156,9 +156,31 @@ extension GameBoardView {
 // MARK: Board Maintaining
 
 extension GameBoardView {
+    
+    func resetBoard() {
+        for i in 0..<boardSize {
+            for j in 0..<boardSize {
+                let c = GameCoordinate(row: i, column: j)
+                let p = getPiece(c)
+                UIView.animateWithDuration(0.2, delay: Double(i+j)*0.06, options: .CurveEaseInOut, animations: {
+                    p.backgroundColor = GamePiece.defaultBackgroundColor
+                    }, completion: { (finished) in
+                })
+                
+                setSpaceFree(c)
+                pseudoSetCoordColor(c, color: GamePiece.defaultBackgroundColor)
+            }
+        }
+    }
+    
     private func setSpaceOccupied(coord: GameCoordinate) {
         guard board[coord.row] != nil else { return }
         board[coord.row]![coord.column] = 1 // set occupied
+    }
+    
+    private func setSpaceFree(coord: GameCoordinate) {
+        guard board[coord.row] != nil else { return }
+        board[coord.row]![coord.column] = 0 // set unoccupied
     }
     
     private func isSpaceFree(coord: GameCoordinate) -> Bool {
@@ -189,7 +211,6 @@ extension GameBoardView {
     
     private func pseudoSetCoordColor(coord: GameCoordinate, color: UIColor) {
         guard isValidCoord(coord) else { return }
-        guard !isSpaceFree(coord) else { return }
         
         boardColors[coord.row]![coord.column] = color
         

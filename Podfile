@@ -5,5 +5,8 @@ target 'CubesGame' do
     pod 'Reveal-iOS-SDK', :configurations => ['Debug']
     pod 'ASCFlatUIColor'
     pod 'SwiftRandom'
+    
+    pod 'Fabric'
+    pod 'Crashlytics'
 end
 
