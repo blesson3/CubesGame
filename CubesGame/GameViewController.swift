@@ -20,7 +20,6 @@ class GameViewController: UIViewController {
     @IBOutlet weak var piecesSliderView: UIView!
     @IBOutlet weak var resetButton: UIButton!
     @IBOutlet weak var shareButton: UIButton!
-    @IBOutlet weak var timerLabel: UILabel!
     
     private var currentPage: [GamePiecePattern] = []
     private var patternsStartingCenters: [GamePiecePattern:CGPoint] = [:]
@@ -29,9 +28,6 @@ class GameViewController: UIViewController {
     private var currentOrientation: UIDeviceOrientation = .Unknown
     
     private var scaleDownTransform = CGAffineTransformMakeScale(0.9, 0.9)
-    
-    private var endTimerDate = NSDate()
-    private var timerUpdateTimer: NSTimer?
     
     @IBOutlet weak var characterImageView: UIImageView!
     
@@ -49,11 +45,6 @@ class GameViewController: UIViewController {
             piecesSliderView.backgroundColor = UIColor.clearColor()
             
             gameBoardView.delegate = self
-            
-            // reset timer, but just to show the timelimit paused
-            resetTimer()
-            timerUpdateTimer?.invalidate()
-            timerUpdateTimer = nil
             
             // Removed orientation changing from gameplay for now
             NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(orientationDidChange(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
@@ -76,53 +67,6 @@ class GameViewController: UIViewController {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-    }
-    
-    // ibaction refers to a demo reset timer button that will not survive beta
-    @IBAction func resetTimer() {
-        // invalidate if needed
-        timerUpdateTimer?.invalidate()
-        timerUpdateTimer = nil
-        
-        // start timerUpdate
-        timerUpdateTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(timerUpdate), userInfo: nil, repeats: true)
-        
-        // reset end timer date
-        endTimerDate = NSDate().dateByAddingTimeInterval(GameManager.sharedManager.timerLength)
-        
-        // call update to update text immediately
-        timerUpdate()
-    }
-    
-    func timerUpdate() {
-        var interval = NSDate().timeIntervalSinceDate(endTimerDate)
-        if interval > 0 {
-            timerLabel.text = "0:00"
-            
-            // trick into reseting by simulating pressing reset button
-            // also invalidates and delays reset of timer
-            resetButtonPressed(resetButton)
-            return
-        }
-        
-        interval = -interval
-        
-        let minutes = Int(floor(interval / 60))
-        let seconds = Int(floor(interval % 60))
-        
-        if minutes > 0 {
-            timerLabel.text = "\(minutes)"
-        }
-        else {
-            timerLabel.text = "0"
-        }
-        
-        if seconds >= 10 {
-            timerLabel.text = timerLabel.text!+":\(seconds)"
-        }
-        else {
-            timerLabel.text = timerLabel.text!+":0\(seconds)"
-        }
     }
     
     func fillPage() {
@@ -180,20 +124,6 @@ class GameViewController: UIViewController {
     
     @IBAction func resetButtonPressed(sender: AnyObject) {
         
-        // invalidate timer now so times don't keep counting
-        timerUpdateTimer?.invalidate()
-        timerUpdateTimer = nil
-        
-        // delay restart of timer
-        delay(1.0) {
-            self.resetTimer()
-        }
-        
-        // reset all of the pieces, board and page
-        resetPageAndBoard()
-    }
-    
-    private func resetPageAndBoard() {
         // animate each seperately on screen at x points: 3/16 | 8/16 | 13/16, but plus 16 for each numerator because we are animating them offscreen
         var i: CGFloat = 0 // index
         var j: CGFloat = 3 // x delta

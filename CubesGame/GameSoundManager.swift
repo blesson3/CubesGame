@@ -19,6 +19,15 @@ class GameSoundManager {
     var soundEffectVariations: [AVAudioPlayer] = []
     
     func initSounds() {
+        
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryAmbient)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            MBLog("AVAudioSession failed to properly init", .FatalError)
+        }
+        
+        
         soundEffectVariations = [audioPlayer1, audioPlayer2, audioPlayer3]
         
         audioPlayer1.prepareToPlay()

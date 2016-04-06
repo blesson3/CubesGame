@@ -21,9 +21,6 @@ class GameManager {
     
     // if this is changed from (3), the algorithm for piece placement within the slide needs changing
     var sliderPageSize: Int = 3
-    
-    // length in seconds that the player will be given for each game session
-    var timerLength: Double = 121 // +1 to account for display, this will display 2:00 then 1:59...
 }
 
 // Global helper function
