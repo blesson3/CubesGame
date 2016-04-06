@@ -103,23 +103,14 @@ class GameViewController: UIViewController {
     }
     
     @IBAction func shareButtonPressed(sender: AnyObject) {
-        
         let imageToShare = UIView.captureScreen(self.view)
         let textToShare = "So addicting.\n\nDownload!\nhttp://mylink.com/eEoDks123" // TODO: randomize the text
         let activityItems: [AnyObject] = [textToShare, imageToShare]
         let activity = UIActivity()
         activity.prepareWithActivityItems([UIActivityTypeMessage, UIActivityTypePostToTwitter, UIActivityTypePostToFacebook, UIActivityTypeSaveToCameraRoll])
         let activityVC = UIActivityViewController(activityItems: activityItems, applicationActivities: [activity])
+        activityVC.excludedActivityTypes = [UIActivityTypeAssignToContact, UIActivityTypeCopyToPasteboard, UIActivityTypeAddToReadingList, UIActivityTypeOpenInIBooks, UIActivityTypeAirDrop, UIActivityTypePrint]
         self.presentViewController(activityVC, animated: true, completion: nil)
-        
-        
-//        if MFMessageComposeViewController.canSendText() {
-//            
-//        }
-//        else {
-//            // show alert
-//            showAlert(title: "Cannot send text!", message: "There is something preveneting us from sending texts, sorry! Screenshot and share with friends")
-//        }
     }
     
     @IBAction func resetButtonPressed(sender: AnyObject) {
@@ -167,7 +158,9 @@ extension GameViewController {
         if currentOrientation != previousOrientation {
             // get difference
             let relativeRotate = OrientationRotate.relativeOrientation(currentOrientation, old: previousOrientation)
-            rotatePage(relativeRotate)
+            if relativeRotate != .None {
+                rotatePage(relativeRotate)
+            }
         }
         
         MBLog("Orientation changed! \(orientation.rawValue)")

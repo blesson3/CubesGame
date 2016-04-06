@@ -40,7 +40,7 @@
                                     <action selector="resetButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="FkU-TE-0AO"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" alpha="0.69999998807907104" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Le8-6a-uPz" userLabel="ResetButton">
+                            <button opaque="NO" alpha="0.69999998807907104" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Le8-6a-uPz" userLabel="ShareButton">
                                 <rect key="frame" x="211" y="77" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="25" id="4eg-aI-ehJ"/>
@@ -68,22 +68,6 @@
                                     <constraint firstAttribute="width" secondItem="fhV-Aj-cKO" secondAttribute="height" multiplier="1:1" id="Re8-5W-03M"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1:30" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rMo-r4-IrD">
-                                <rect key="frame" x="144" y="74" width="33" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u4l-7F-Fbx" userLabel="Demo-TimerResetButton">
-                                <rect key="frame" x="128" y="62" width="66" height="44"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="Fle-sD-3Lf"/>
-                                    <constraint firstAttribute="width" constant="66" id="oBY-gq-LDD"/>
-                                </constraints>
-                                <connections>
-                                    <action selector="resetTimer" destination="BYZ-38-t0r" eventType="touchUpInside" id="aZ9-wl-cbP"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
@@ -91,7 +75,6 @@
                             <constraint firstItem="Moy-XB-Bc2" firstAttribute="top" secondItem="MKe-Zn-fgo" secondAttribute="bottom" constant="16" id="574-vV-Sgt"/>
                             <constraint firstItem="MKe-Zn-fgo" firstAttribute="top" secondItem="fhV-Aj-cKO" secondAttribute="bottom" constant="8" id="7Ii-wS-S3d"/>
                             <constraint firstAttribute="trailing" secondItem="aBH-er-LTU" secondAttribute="trailing" id="8Gp-zA-llN"/>
-                            <constraint firstItem="u4l-7F-Fbx" firstAttribute="centerY" secondItem="rMo-r4-IrD" secondAttribute="centerY" id="9aH-Ef-On8"/>
                             <constraint firstItem="Le8-6a-uPz" firstAttribute="centerY" secondItem="shR-H0-Yug" secondAttribute="centerY" id="BHT-RS-0Yr"/>
                             <constraint firstItem="Le8-6a-uPz" firstAttribute="width" secondItem="Le8-6a-uPz" secondAttribute="height" multiplier="115:99" constant="1" id="FYn-6C-Odu"/>
                             <constraint firstItem="MKe-Zn-fgo" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-29" id="Ibg-Lv-IBO"/>
@@ -101,9 +84,6 @@
                             <constraint firstItem="Moy-XB-Bc2" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="MEb-LH-1Rc"/>
                             <constraint firstAttribute="trailing" secondItem="shR-H0-Yug" secondAttribute="trailing" constant="19" id="Xmd-PH-8SH"/>
                             <constraint firstItem="aBH-er-LTU" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Yyv-N3-ssL"/>
-                            <constraint firstItem="u4l-7F-Fbx" firstAttribute="centerX" secondItem="rMo-r4-IrD" secondAttribute="centerX" id="eUe-Mb-u0x"/>
-                            <constraint firstItem="rMo-r4-IrD" firstAttribute="centerX" secondItem="MKe-Zn-fgo" secondAttribute="centerX" id="hUw-N7-Gqz"/>
-                            <constraint firstItem="MKe-Zn-fgo" firstAttribute="top" secondItem="rMo-r4-IrD" secondAttribute="bottom" constant="19" id="jM8-sA-zkv"/>
                             <constraint firstItem="MKe-Zn-fgo" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="19" id="kpE-qH-U8g"/>
                             <constraint firstItem="aBH-er-LTU" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="mGT-bP-x2i"/>
                             <constraint firstAttribute="topMargin" secondItem="aBH-er-LTU" secondAttribute="top" id="mt9-eW-d62"/>
@@ -124,7 +104,6 @@
                         <outlet property="piecesSliderView" destination="Moy-XB-Bc2" id="cqI-TD-6j6"/>
                         <outlet property="resetButton" destination="shR-H0-Yug" id="BdH-G1-73p"/>
                         <outlet property="shareButton" destination="Le8-6a-uPz" id="T0F-dm-Xac"/>
-                        <outlet property="timerLabel" destination="rMo-r4-IrD" id="FpM-lL-TBW"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
