@@ -61,15 +61,15 @@ enum Pattern: UInt32 {
         case None
         case Right
         case Left
-        case Flip
+        case UpsideDown
         
         var nextRight: PatternRotate {
             switch self {
             case .None:
                 return .Right
             case .Right:
-                return .Flip
-            case .Flip:
+                return .UpsideDown
+            case .UpsideDown:
                 return .Left
             case .Left:
                 return .None
@@ -82,10 +82,33 @@ enum Pattern: UInt32 {
                 return .Left
             case .Right:
                 return .None
-            case .Flip:
+            case .UpsideDown:
                 return .Right
             case .Left:
-                return .Flip
+                return .UpsideDown
+            }
+        }
+        
+        func getRotationByRotatingCurrentBy(rotate: OrientationRotate) -> PatternRotate {
+            switch (self, rotate) {
+                
+            case _ where rotate == .None:
+                return self
+                
+            case (.Left, .Right), (.Right, .Left), (.UpsideDown, .UpsideDown):
+                return .None
+                
+            case (.None, .Left), (.UpsideDown, .Right), (.Right, .UpsideDown):
+                return .Left
+                
+            case (.None, .Right), (.UpsideDown, .Left), (.Left, .UpsideDown):
+                return .Right
+                
+            case (.Right, .Right), (.Left, .Left), (.None, .UpsideDown):
+                return .UpsideDown
+                
+            default:
+                fatalError("every case should be above")
             }
         }
         
@@ -119,7 +142,7 @@ enum Pattern: UInt32 {
                 return "01|11"
             case .Left:
                 return "11|1"
-            case .Flip:
+            case .UpsideDown:
                 return "11|01"
             }
             
@@ -131,7 +154,7 @@ enum Pattern: UInt32 {
                 return "001|001|111"
             case .Left:
                 return "111|1|1"
-            case .Flip:
+            case .UpsideDown:
                 return "111|001|001"
             }
             
@@ -149,7 +172,7 @@ enum Pattern: UInt32 {
                 return "11"
             case .Left:
                 return "11"
-            case .Flip:
+            case .UpsideDown:
                 return "1|1"
             }
             
@@ -161,7 +184,7 @@ enum Pattern: UInt32 {
                 return "111"
             case .Left:
                 return "111"
-            case .Flip:
+            case .UpsideDown:
                 return "1|1|1"
             }
             
@@ -173,7 +196,7 @@ enum Pattern: UInt32 {
                 return "1111"
             case .Left:
                 return "1111"
-            case .Flip:
+            case .UpsideDown:
                 return "1|1|1|1"
             }
             
@@ -185,7 +208,7 @@ enum Pattern: UInt32 {
                 return "11|011"
             case .Left:
                 return "11|011"
-            case .Flip:
+            case .UpsideDown:
                 return "01|11|10"
             }
         }
@@ -205,6 +228,48 @@ enum Pattern: UInt32 {
         // pick and return a new value
         let rand = arc4random_uniform(count)
         return Pattern(rawValue: rand)!
+    }
+}
+
+enum OrientationRotate: CGFloat {
+    case Left = 90
+    case Right = -90
+    case UpsideDown = 180
+    case None = 0
+    
+    static func relativeOrientation(current: UIDeviceOrientation, old: UIDeviceOrientation) -> OrientationRotate {
+        switch (old, current) {
+            
+        case _ where old == current:
+            return .None
+            
+        case (.Portrait, .LandscapeLeft), (.LandscapeLeft, .PortraitUpsideDown), (.PortraitUpsideDown, .LandscapeRight), (.LandscapeRight, .Portrait):
+            return .Left
+        case  (.Portrait, .LandscapeRight), (.LandscapeRight, .PortraitUpsideDown), (.PortraitUpsideDown, .LandscapeLeft), (.LandscapeLeft, .Portrait):
+            return .Right
+        case (.Portrait, .PortraitUpsideDown), (.PortraitUpsideDown, .Portrait), (.LandscapeLeft, .LandscapeRight), (.LandscapeRight, .LandscapeLeft):
+            return .UpsideDown
+            
+        case (.FaceUp, .LandscapeLeft), (.FaceDown, .LandscapeLeft):
+            return .Left
+        case (.FaceUp, .LandscapeRight), (.FaceDown, .LandscapeRight):
+            return .Right
+        case (.FaceUp, .Portrait), (.FaceDown, .Portrait):
+            return .None
+            
+            // Treat a faceup and facedown as to portrait
+        case _ where current == .FaceDown || current == .FaceUp:
+            return relativeOrientation(.Portrait, old: old)
+        case _ where old == .FaceDown || old == .FaceUp:
+            return relativeOrientation(current, old: .Portrait)
+        
+            // Unsure
+        case _ where current == .Unknown || old == .Unknown:
+            return .None
+        
+        default:
+            fatalError("Exhausted relative orientation c: \(current) o: \(old)")
+        }
     }
 }
 

@@ -9,6 +9,10 @@
 import Foundation
 import UIKit
 
+protocol GameBoardViewDelegate: class {
+    func gameBoardDidFill()
+}
+
 class GameBoardView: UIView {
     private var baseSetup: Bool = false
     
@@ -17,6 +21,8 @@ class GameBoardView: UIView {
     private var board: [Int:[Int]] = [:]            // Row:[Column]
     private var boardColors: [Int:[UIColor]] = [:]  // Row:[Column(Color)]
     private var boardPieces: [[GamePiece]] = []     // boardPieces[Row][Column]
+    
+    weak var delegate: GameBoardViewDelegate?
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -111,6 +117,11 @@ extension GameBoardView {
             pseudoSetCoordColor(c, color: piecesColor)
         }
         
+        // check if the board is full
+        if isBoardFull() {
+            delegate?.gameBoardDidFill()
+        }
+        
         let piecePlusCushion = GameManager.sharedManager.globalPieceSizePlusCushion
         
         // -2 to both of the origin points to account for the extra cushion added
@@ -198,6 +209,18 @@ extension GameBoardView {
     
     private func getPiece(coord: GameCoordinate) -> GamePiece {
         return boardPieces[coord.row][coord.column]
+    }
+    
+    private func isBoardFull() -> Bool {
+        for i in 0..<boardSize {
+            for j in 0..<boardSize {
+                let c = GameCoordinate(row: i, column: j)
+                if isSpaceFree(c) {
+                    return false
+                }
+            }
+        }
+        return true
     }
     
     func updateBoardColoring() {

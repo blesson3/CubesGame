@@ -17,38 +17,112 @@ import UIKit
 class GameViewController: UIViewController {
 
     @IBOutlet weak var gameBoardView: GameBoardView!
-    @IBOutlet weak var piecesSliderView: PiecesSliderView!
+    @IBOutlet weak var piecesSliderView: UIView!
     @IBOutlet weak var resetButton: UIButton!
+    @IBOutlet weak var shareButton: UIButton!
+    @IBOutlet weak var timerLabel: UILabel!
     
     private var currentPage: [GamePiecePattern] = []
     private var patternsStartingCenters: [GamePiecePattern:CGPoint] = [:]
+    private var patternsStartingTransforms: [GamePiecePattern:CGAffineTransform] = [:]
     
-    private var previousOrientation: UIDeviceOrientation = .Unknown
+    private var currentOrientation: UIDeviceOrientation = .Unknown
+    
+    private var scaleDownTransform = CGAffineTransformMakeScale(0.9, 0.9)
+    
+    private var endTimerDate = NSDate()
+    private var timerUpdateTimer: NSTimer?
+    
+    @IBOutlet weak var characterImageView: UIImageView!
+    
+    private var viewHasAppeared: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        gameBoardView.backgroundColor = UIColor.clearColor()
-        piecesSliderView.backgroundColor = UIColor.clearColor()
-        
-        // Removed orientation changing from gameplay for now
-//        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(orientationDidChange(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
+        if !viewHasAppeared {
+            gameBoardView.backgroundColor = UIColor.clearColor()
+            piecesSliderView.backgroundColor = UIColor.clearColor()
+            
+            gameBoardView.delegate = self
+            
+            // reset timer, but just to show the timelimit paused
+            resetTimer()
+            timerUpdateTimer?.invalidate()
+            timerUpdateTimer = nil
+            
+            // Removed orientation changing from gameplay for now
+            NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(orientationDidChange(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
+        }
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        // delay one second, then fill page
-        NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(fillPage), userInfo: nil, repeats: false)
+        if !viewHasAppeared {
+            viewHasAppeared = true
+            
+            // for effect
+            delay(1.0) {
+                // simulates a reset of the board, page, and timer
+                self.resetButtonPressed(self.resetButton)
+            }
+        }
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    // ibaction refers to a demo reset timer button that will not survive beta
+    @IBAction func resetTimer() {
+        // invalidate if needed
+        timerUpdateTimer?.invalidate()
+        timerUpdateTimer = nil
+        
+        // start timerUpdate
+        timerUpdateTimer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(timerUpdate), userInfo: nil, repeats: true)
+        
+        // reset end timer date
+        endTimerDate = NSDate().dateByAddingTimeInterval(GameManager.sharedManager.timerLength)
+        
+        // call update to update text immediately
+        timerUpdate()
+    }
+    
+    func timerUpdate() {
+        var interval = NSDate().timeIntervalSinceDate(endTimerDate)
+        if interval > 0 {
+            timerLabel.text = "0:00"
+            
+            // trick into reseting by simulating pressing reset button
+            // also invalidates and delays reset of timer
+            resetButtonPressed(resetButton)
+            return
+        }
+        
+        interval = -interval
+        
+        let minutes = Int(floor(interval / 60))
+        let seconds = Int(floor(interval % 60))
+        
+        if minutes > 0 {
+            timerLabel.text = "\(minutes)"
+        }
+        else {
+            timerLabel.text = "0"
+        }
+        
+        if seconds >= 10 {
+            timerLabel.text = timerLabel.text!+":\(seconds)"
+        }
+        else {
+            timerLabel.text = timerLabel.text!+":0\(seconds)"
+        }
     }
     
     func fillPage() {
@@ -64,7 +138,7 @@ class GameViewController: UIViewController {
             let pattern = GamePiecePatternGenerator.generatePatternWRandomRotate(p)
             pattern.touchesHandler = self
             pattern.center = CGPoint(x: -pattern.bounds.width*1.5, y: piecesSliderView.center.y)
-            pattern.transform = CGAffineTransformMakeScale(0.9, 0.9)
+            pattern.transform = scaleDownTransform
             self.view.addSubview(pattern)
             
             currentPage.insert(pattern, atIndex: 0)
@@ -84,9 +158,42 @@ class GameViewController: UIViewController {
         }
     }
     
-    @IBAction func resetButtonPressed(sender: AnyObject) {
-        gameBoardView.resetBoard()
+    @IBAction func shareButtonPressed(sender: AnyObject) {
         
+        let imageToShare = UIView.captureScreen(self.view)
+        let textToShare = "So addicting.\n\nDownload!\nhttp://mylink.com/eEoDks123" // TODO: randomize the text
+        let activityItems: [AnyObject] = [textToShare, imageToShare]
+        let activity = UIActivity()
+        activity.prepareWithActivityItems([UIActivityTypeMessage, UIActivityTypePostToTwitter, UIActivityTypePostToFacebook, UIActivityTypeSaveToCameraRoll])
+        let activityVC = UIActivityViewController(activityItems: activityItems, applicationActivities: [activity])
+        self.presentViewController(activityVC, animated: true, completion: nil)
+        
+        
+//        if MFMessageComposeViewController.canSendText() {
+//            
+//        }
+//        else {
+//            // show alert
+//            showAlert(title: "Cannot send text!", message: "There is something preveneting us from sending texts, sorry! Screenshot and share with friends")
+//        }
+    }
+    
+    @IBAction func resetButtonPressed(sender: AnyObject) {
+        
+        // invalidate timer now so times don't keep counting
+        timerUpdateTimer?.invalidate()
+        timerUpdateTimer = nil
+        
+        // delay restart of timer
+        delay(1.0) {
+            self.resetTimer()
+        }
+        
+        // reset all of the pieces, board and page
+        resetPageAndBoard()
+    }
+    
+    private func resetPageAndBoard() {
         // animate each seperately on screen at x points: 3/16 | 8/16 | 13/16, but plus 16 for each numerator because we are animating them offscreen
         var i: CGFloat = 0 // index
         var j: CGFloat = 3 // x delta
@@ -106,6 +213,8 @@ class GameViewController: UIViewController {
         delay(0.5) {
             self.fillPage()
         }
+        
+        gameBoardView.resetBoard()
     }
     
     override func prefersStatusBarHidden() -> Bool {
@@ -116,25 +225,25 @@ class GameViewController: UIViewController {
 // MARK: Orientation Handler
 
 extension GameViewController {
-    private enum OrientationRotate {
-        case Left
-        case Right
-    }
-    
     func orientationDidChange(notification: NSNotification) {
         let orientation = UIDevice.currentDevice().orientation
+        let previousOrientation = currentOrientation
+        currentOrientation = orientation
+        
+        // Compare against current block orientedRotate
+        // Reset the blocks back to their original .None rotate
         
         // if it was portrait, but now it is landscape, turn the blocks
-        if (previousOrientation.isPortrait && orientation.isLandscape) || (previousOrientation.isLandscape && orientation.isPortrait) {
-            rotatePage(previousOrientation == .LandscapeLeft && orientation == .Portrait ? .Right : .Left)
+        if currentOrientation != previousOrientation {
+            // get difference
+            let relativeRotate = OrientationRotate.relativeOrientation(currentOrientation, old: previousOrientation)
+            rotatePage(relativeRotate)
         }
         
-        previousOrientation = orientation
         MBLog("Orientation changed! \(orientation.rawValue)")
     }
     
     private func rotatePage(rotate: OrientationRotate) {
-        
         var rotatedPage: [GamePiecePattern] = []
         
         for piecePattern in currentPage {
@@ -145,11 +254,11 @@ extension GameViewController {
             // transform to look like original
             // animate transform for effect
             
-            let nextRotation = rotate == .Right ? piecePattern.rotation.nextRight :  piecePattern.rotation.nextLeft
+            let nextRotation: Pattern.PatternRotate = piecePattern.rotation.getRotationByRotatingCurrentBy(rotate)
             let rotatedPattern = GamePiecePatternGenerator.generatePattern(piecePattern.pattern, rotate: nextRotation)
             rotatedPattern.touchesHandler = self
             rotatedPattern.center = piecePattern.center
-            rotatedPattern.transform = CGAffineTransformMakeRotation(GamePiecePatternGenerator.degreesToRadians(rotate == .Right ? -90 : 90)) // artifically rotate backwards to simulate the original
+            rotatedPattern.transform = CGAffineTransformConcat(scaleDownTransform, CGAffineTransformMakeRotation(GamePiecePatternGenerator.degreesToRadians(rotate.rawValue))) // artifically rotate backwards to simulate the original
             self.view.addSubview(rotatedPattern)
             
             rotatedPage.append(rotatedPattern)
@@ -164,14 +273,14 @@ extension GameViewController {
         UIView.animateWithDuration(0.4, animations: {
         //UIView.animateWithDuration(1.0, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.1, options: .CurveEaseInOut, animations: {
             
-            for rp in rotatedPage {
-                rp.transform = CGAffineTransformIdentity
+            // rotatedPage
+            for rp in self.currentPage {
+                rp.transform = self.scaleDownTransform
             }
             
             }) { (finished) in
                 
         }
-        
     }
 }
 
@@ -182,10 +291,27 @@ extension GameViewController: TouchesHandler {
     func gamePieceTouchesBegan(gamePiecePattern: GamePiecePattern, touches: Set<UITouch>, withEvent event: UIEvent?) {
         let t = touches.first!
         let point = t.locationInView(self.view)
-        let newCenter = CGPoint(x: point.x, y: point.y-80)
+        
+        var newCenter = CGPoint(x: point.x, y: point.y)
+        
+        // adjust so the piece is not directly under the user's finger
+        // adjust the center for the orientation
+        switch currentOrientation {
+        case .FaceDown, .FaceUp, .Portrait:
+            newCenter.y -= 80
+        case .LandscapeLeft:
+            newCenter.x += 80
+        case .LandscapeRight:
+            newCenter.x -= 80
+        case .PortraitUpsideDown:
+            newCenter.y += 80
+        default:
+            newCenter.y -= 80
+        }
         
         // record initial center and transform
         patternsStartingCenters[gamePiecePattern] = gamePiecePattern.center
+        patternsStartingTransforms[gamePiecePattern] = gamePiecePattern.transform
         
         // animate larger
         UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
@@ -201,7 +327,41 @@ extension GameViewController: TouchesHandler {
     func gamePieceTouchesMoved(gamePiecePattern: GamePiecePattern, touches: Set<UITouch>, withEvent event: UIEvent?) {
         let t = touches.first!
         let point = t.locationInView(self.view)
-        let newCenter = CGPoint(x: point.x, y: point.y-80)
+        
+        
+        var newCenter = CGPoint(x: point.x, y: point.y)
+        
+        // adjust so the piece is not directly under the user's finger
+        // adjust the center for the orientation
+        switch currentOrientation {
+        case .FaceDown, .FaceUp, .Portrait:
+            newCenter.y -= 80
+        case .LandscapeLeft:
+            newCenter.x += 80
+            
+            // needs adjustment near left edge
+            if point.x < 100 {
+                newCenter.x = max(point.x, (newCenter.x*(point.x/100))+GameManager.sharedManager.globalPieceSize)
+            }
+            
+        case .LandscapeRight:
+            
+            newCenter.x -= 80
+
+            // TODO: needs fixing
+//            // needs adjustment near right edge
+//            if point.x > UIScreen.mainScreen().bounds.width-100 {
+//                newCenter.x = point.x
+//            }
+//            else {
+//                newCenter.x -= 80
+//            }
+            
+        case .PortraitUpsideDown:
+            newCenter.y += 80
+        default:
+            newCenter.y -= 80
+        }
         
          gamePiecePattern.center = newCenter
     }
@@ -240,6 +400,11 @@ extension GameViewController: TouchesHandler {
             
             // fill the gaps in the page with new blocks
             fillPage()
+            
+            // shink back to normal size
+            UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
+                gamePiecePattern.transform = CGAffineTransformIdentity
+                }, completion: nil)
         }
         else {
             // throw that piece back to where it belongs
@@ -250,11 +415,29 @@ extension GameViewController: TouchesHandler {
                         self.patternsStartingCenters[gamePiecePattern] = nil
                     }
             })
+            
+            // shink back to normal size
+            UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
+                gamePiecePattern.transform = self.patternsStartingTransforms[gamePiecePattern]!
+                }, completion: nil)
         }
-        
-        // shink back to normal size
-        UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
-            gamePiecePattern.transform = CGAffineTransformIdentity
-            }, completion: nil)
     }
 }
+
+// MARK: GameBoardViewDelegate
+
+extension GameViewController: GameBoardViewDelegate {
+    func gameBoardDidFill() {
+        UIView.animateWithDuration(1.0, delay: 0.0, options: .CurveEaseInOut, animations: { 
+            self.characterImageView.transform = CGAffineTransformMakeRotation(GamePiecePatternGenerator.degreesToRadians(360*2))
+            }) { (finished) in
+                self.characterImageView.transform = CGAffineTransformIdentity
+        }
+    }
+}
+
+// MARK: MFMessageComposeViewControllerDelegate, UINavigationControllerDelegate
+
+//extension GameViewController: MFMessageComposeViewControllerDelegate, UINavigationControllerDelegate {
+//    
+//}

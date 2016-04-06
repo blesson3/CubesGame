@@ -26,8 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Fabric.with([Crashlytics.self])
         
         // generate notifications that the GameViewController will listen for, but...
-        // Removed orientation changing from gameplay for now
-//        UIDevice.currentDevice().beginGeneratingDeviceOrientationNotifications()
+        UIDevice.currentDevice().beginGeneratingDeviceOrientationNotifications()
         
         return true
     }
