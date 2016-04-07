@@ -277,8 +277,8 @@ enum OrientationRotate: CGFloat {
 
 class GamePiecePattern: UIView {
     private let pieces: [GamePiece]
-    let pattern: Pattern
-    let rotation: Pattern.PatternRotate
+    var pattern: Pattern
+    var rotation: Pattern.PatternRotate
     
     var piecesBackgroundColor: UIColor {
         return pieces[0].backgroundColor!

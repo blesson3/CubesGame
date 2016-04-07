@@ -33,6 +33,7 @@ class GamePiece: UIView {
     }
     
     private func setup() {
+        self.userInteractionEnabled = false
         self.backgroundColor = GamePiece.defaultBackgroundColor
         self.layer.cornerRadius = 4 // 3.2
     }

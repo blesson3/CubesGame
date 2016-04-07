@@ -204,8 +204,8 @@
 				D924420E1CB19F68003DA666 /* Resources */,
 				0DFB0D4F444890529AF483F4 /* Embed Pods Frameworks */,
 				C49AC513C01962EC8267048B /* Copy Pods Resources */,
-				D9F28EC91CB433FB00BE4FFB /* Fabric */,
 				D972C14D1CB434F800D403C1 /* Increment Build Number */,
+				D9F28EC91CB433FB00BE4FFB /* Fabric */,
 			);
 			buildRules = (
 			);

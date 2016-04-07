@@ -167,7 +167,8 @@ extension GameViewController {
     }
     
     private func rotatePage(rotate: OrientationRotate) {
-        var rotatedPage: [GamePiecePattern] = []
+        
+        var initialTransforms: [GamePiecePattern:CGAffineTransform] = [:]
         
         for piecePattern in currentPage {
             
@@ -177,32 +178,40 @@ extension GameViewController {
             // transform to look like original
             // animate transform for effect
             
+            initialTransforms[piecePattern] = piecePattern.transform
+            
             let nextRotation: Pattern.PatternRotate = piecePattern.rotation.getRotationByRotatingCurrentBy(rotate)
             let rotatedPattern = GamePiecePatternGenerator.generatePattern(piecePattern.pattern, rotate: nextRotation)
-            rotatedPattern.touchesHandler = self
             rotatedPattern.center = piecePattern.center
-            rotatedPattern.transform = CGAffineTransformConcat(scaleDownTransform, CGAffineTransformMakeRotation(GamePiecePatternGenerator.degreesToRadians(rotate.rawValue))) // artifically rotate backwards to simulate the original
-            self.view.addSubview(rotatedPattern)
             
-            rotatedPage.append(rotatedPattern)
+            // removes all of the subviews from the piece pattern
+            for s in piecePattern.subviews {
+                s.removeFromSuperview()
+            }
             
-            // remove the original
-            piecePattern.removeFromSuperview()
+            // add all of the rotated pieces in
+            for s in rotatedPattern.subviews {
+                piecePattern.addSubview(s)
+            }
+            
+            let center = piecePattern.center
+            piecePattern.frame = rotatedPattern.frame
+            piecePattern.center = center // need to retain same center
+            piecePattern.rotation = rotatedPattern.rotation
+            piecePattern.pattern = rotatedPattern.pattern
+            let rotatedTransform = CGAffineTransformMakeRotation(GamePiecePatternGenerator.degreesToRadians(rotate.rawValue))
+            piecePattern.transform = CGAffineTransformConcat(piecePattern.transform, rotatedTransform) // artifically rotate backwards to simulate the original
         }
         
-        currentPage.removeAll()
-        currentPage.appendContentsOf(rotatedPage)
-        
-        UIView.animateWithDuration(0.4, animations: {
-        //UIView.animateWithDuration(1.0, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.1, options: .CurveEaseInOut, animations: {
+        UIView.animateWithDuration(0.5, delay: 0.0, options: [.CurveEaseInOut, .AllowUserInteraction], animations: {
+        // UIView.animateWithDuration(1.0, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.1, options: .CurveEaseInOut, animations: {
             
             // rotatedPage
             for rp in self.currentPage {
-                rp.transform = self.scaleDownTransform
+                rp.transform = initialTransforms[rp]!
             }
             
             }) { (finished) in
-                
         }
     }
 }
@@ -259,34 +268,40 @@ extension GameViewController: TouchesHandler {
         switch currentOrientation {
         case .FaceDown, .FaceUp, .Portrait:
             newCenter.y -= 80
+            
         case .LandscapeLeft:
             newCenter.x += 80
             
             // needs adjustment near left edge
             if point.x < 100 {
-                newCenter.x = max(point.x, (newCenter.x*(point.x/100))+GameManager.sharedManager.globalPieceSize)
+                // TODO: needs adjustment with the pieceSize
+                let percent = (point.x/100)
+                MBLog("\(percent)")
+                newCenter.x = max(point.x, (newCenter.x*percent)+GameManager.sharedManager.globalPieceSize*1.0*(1-percent))
             }
             
         case .LandscapeRight:
-            
-            newCenter.x -= 80
-
-            // TODO: needs fixing
-//            // needs adjustment near right edge
-//            if point.x > UIScreen.mainScreen().bounds.width-100 {
-//                newCenter.x = point.x
-//            }
-//            else {
-//                newCenter.x -= 80
-//            }
+            // needs adjustment near right edge
+            if point.x > UIScreen.mainScreen().bounds.width-100 {
+                let percent = ((point.x-(UIScreen.mainScreen().bounds.width-100))/100)
+                newCenter.x -= 80 - (percent * 80) + GameManager.sharedManager.globalPieceSize*1.0*percent
+            }
+            else {
+                newCenter.x -= 80
+            }
             
         case .PortraitUpsideDown:
             newCenter.y += 80
+            
         default:
             newCenter.y -= 80
         }
         
-         gamePiecePattern.center = newCenter
+        UIView.animateWithDuration(0.08, delay: 0.0, options: [.CurveEaseInOut, .AllowUserInteraction], animations: {
+            gamePiecePattern.center = newCenter
+            }, completion: { finished in
+            })
+        
     }
     
     func gamePieceTouchesEnded(gamePiecePattern: GamePiecePattern, touches: Set<UITouch>, withEvent event: UIEvent?) {
