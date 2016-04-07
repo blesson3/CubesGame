@@ -274,9 +274,7 @@ extension GameViewController: TouchesHandler {
             
             // needs adjustment near left edge
             if point.x < 100 {
-                // TODO: needs adjustment with the pieceSize
                 let percent = (point.x/100)
-                MBLog("\(percent)")
                 newCenter.x = max(point.x, (newCenter.x*percent)+GameManager.sharedManager.globalPieceSize*1.0*(1-percent))
             }
             

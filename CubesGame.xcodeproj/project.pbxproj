@@ -13,6 +13,8 @@
 		D92442191CB19F68003DA666 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D92442171CB19F68003DA666 /* Main.storyboard */; };
 		D924421B1CB19F68003DA666 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D924421A1CB19F68003DA666 /* Assets.xcassets */; };
 		D924421E1CB19F68003DA666 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D924421C1CB19F68003DA666 /* LaunchScreen.storyboard */; };
+		D942BCB81CB5FFDC0097275A /* GameBoardSolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D942BCB71CB5FFDC0097275A /* GameBoardSolver.swift */; };
+		D94DEF751CB6978D001F2D5D /* SolverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94DEF741CB6978D001F2D5D /* SolverViewController.swift */; };
 		D9A6CBA01CB1DE8900B7A6DE /* GamePiecePattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A6CB9F1CB1DE8900B7A6DE /* GamePiecePattern.swift */; };
 		D9A6CBA21CB1EE3B00B7A6DE /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9A6CBA11CB1EE3B00B7A6DE /* iAd.framework */; };
 		D9B08B681CB5398500F792BC /* UIView-Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B08B671CB5398500F792BC /* UIView-Extensions.swift */; };
@@ -40,6 +42,8 @@
 		D924421A1CB19F68003DA666 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D924421D1CB19F68003DA666 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D924421F1CB19F68003DA666 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D942BCB71CB5FFDC0097275A /* GameBoardSolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameBoardSolver.swift; sourceTree = "<group>"; };
+		D94DEF741CB6978D001F2D5D /* SolverViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolverViewController.swift; sourceTree = "<group>"; };
 		D9A6CB9F1CB1DE8900B7A6DE /* GamePiecePattern.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GamePiecePattern.swift; sourceTree = "<group>"; };
 		D9A6CBA11CB1EE3B00B7A6DE /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = System/Library/Frameworks/iAd.framework; sourceTree = SDKROOT; };
 		D9B08B671CB5398500F792BC /* UIView-Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView-Extensions.swift"; sourceTree = "<group>"; };
@@ -102,8 +106,7 @@
 				D9B08B691CB5399800F792BC /* Extensions/Helpers */,
 				D92442131CB19F68003DA666 /* AppDelegate.swift */,
 				D9B08B6A1CB539AE00F792BC /* Managers */,
-				D92442151CB19F68003DA666 /* GameViewController.swift */,
-				D9EA665A1CB1A5E4000CCF29 /* GameBoardView.swift */,
+				D94DEF711CB69768001F2D5D /* ViewControllers/Views */,
 				D9B08B6B1CB539BB00F792BC /* GamePiece */,
 				D92442171CB19F68003DA666 /* Main.storyboard */,
 				D924421A1CB19F68003DA666 /* Assets.xcassets */,
@@ -114,6 +117,33 @@
 				D9B08B751CB53BA200F792BC /* External */,
 			);
 			path = CubesGame;
+			sourceTree = "<group>";
+		};
+		D94DEF711CB69768001F2D5D /* ViewControllers/Views */ = {
+			isa = PBXGroup;
+			children = (
+				D94DEF731CB69783001F2D5D /* Solver */,
+				D94DEF721CB6977E001F2D5D /* Game */,
+			);
+			name = ViewControllers/Views;
+			sourceTree = "<group>";
+		};
+		D94DEF721CB6977E001F2D5D /* Game */ = {
+			isa = PBXGroup;
+			children = (
+				D92442151CB19F68003DA666 /* GameViewController.swift */,
+				D9EA665A1CB1A5E4000CCF29 /* GameBoardView.swift */,
+			);
+			name = Game;
+			sourceTree = "<group>";
+		};
+		D94DEF731CB69783001F2D5D /* Solver */ = {
+			isa = PBXGroup;
+			children = (
+				D94DEF741CB6978D001F2D5D /* SolverViewController.swift */,
+				D942BCB71CB5FFDC0097275A /* GameBoardSolver.swift */,
+			);
+			name = Solver;
 			sourceTree = "<group>";
 		};
 		D9B08B691CB5399800F792BC /* Extensions/Helpers */ = {
@@ -350,10 +380,12 @@
 				D9B08B771CB53E0800F792BC /* UIViewControllerNoStatusBar.swift in Sources */,
 				D9EA665F1CB1AAEC000CCF29 /* Debug.swift in Sources */,
 				D92442141CB19F68003DA666 /* AppDelegate.swift in Sources */,
+				D942BCB81CB5FFDC0097275A /* GameBoardSolver.swift in Sources */,
 				D9EA66631CB1BA5A000CCF29 /* GameManager.swift in Sources */,
 				D9EA665D1CB1A635000CCF29 /* GamePiece.swift in Sources */,
 				D9B08B731CB53B8100F792BC /* UIAlertController+Window.m in Sources */,
 				D9B08B681CB5398500F792BC /* UIView-Extensions.swift in Sources */,
+				D94DEF751CB6978D001F2D5D /* SolverViewController.swift in Sources */,
 				D9EA665B1CB1A5E4000CCF29 /* GameBoardView.swift in Sources */,
 				D9B08B6F1CB53B1300F792BC /* Helper.swift in Sources */,
 				D9A6CBA01CB1DE8900B7A6DE /* GamePiecePattern.swift in Sources */,

@@ -16,9 +16,9 @@ protocol GameBoardViewDelegate: class {
 class GameBoardView: UIView {
     private var baseSetup: Bool = false
     
-    private var boardSize: Int = 10
+    var boardSize: Int = 10
     
-    private var board: [Int:[Int]] = [:]            // Row:[Column]
+    private var board: [[Int]] = []            // Row:[Column]
     private var boardColors: [Int:[UIColor]] = [:]  // Row:[Column(Color)]
     private var boardPieces: [[GamePiece]] = []     // boardPieces[Row][Column]
     
@@ -52,6 +52,7 @@ class GameBoardView: UIView {
         
         for _i in 0..<boardSize {       // row
             let i = CGFloat(_i)
+            board.append([])
             board[_i] = []
             boardColors[_i] = []
             
@@ -66,16 +67,32 @@ class GameBoardView: UIView {
                 self.addSubview(piece)
                 
                 boardPieces[_i].append(piece)
-                board[_i]?.append(0)
+                board[_i].append(0)
                 boardColors[_i]?.append(piece.backgroundColor!)
             }
         }
     }
+    
+    internal func getBoard() -> [[Int]] {
+        return board
+    }
 }
 
-struct GameCoordinate {
+func ==(lhs: GameCoordinate, rhs: GameCoordinate) -> Bool {
+    return lhs.row == rhs.row && lhs.column == rhs.column
+}
+
+struct GameCoordinate: Hashable, Equatable {
     let row: Int
     let column: Int
+    
+    var hashValue: Int {
+        var hash = 0
+        hash = ((row >> 16) ^ row) * 0x45d9f3b
+        hash = ((row >> 16) ^ row) * 0x45d9f3b
+        hash = ((row >> 16) ^ row)
+        return hash+column
+    }
 }
 
 // MARK: Placing GamePiecePatterns
@@ -84,7 +101,7 @@ extension GameBoardView {
     func canPlaceGamePiecePattern(gamePiecePattern: GamePiecePattern, frameInBoard: CGRect) -> Bool {
         let initialCoord = getClosestCoords(frameInBoard)
         
-//        MBLog("Closest initial coord (r, c) (\(initialCoord.row), \(initialCoord.column))")
+        MBLog("Closest initial coord (r, c) (\(initialCoord.row), \(initialCoord.column))")
         
         // incorporate pattern
         let pattern = gamePiecePattern.pattern.rotatedEncodedPattern(gamePiecePattern.rotation)
@@ -104,7 +121,7 @@ extension GameBoardView {
         let initialCoord = getClosestCoords(frameInBoard)
         
         // testing only to ensure the spaces are all free
-        guard canPlaceGamePiecePattern(gamePiecePattern, frameInBoard: frameInBoard) else { fatalError("called placeGamePiece while it is found that the piece will not fit")}
+        guard canPlaceGamePiecePattern(gamePiecePattern, frameInBoard: frameInBoard) else { fatalError("called placeGamePiece while it is found that the piece will not fit") }
         
         // incorporate pattern
         let pattern = gamePiecePattern.pattern.rotatedEncodedPattern(gamePiecePattern.rotation)
@@ -185,13 +202,13 @@ extension GameBoardView {
     }
     
     private func setSpaceOccupied(coord: GameCoordinate) {
-        guard board[coord.row] != nil else { return }
-        board[coord.row]![coord.column] = 1 // set occupied
+        guard isValidCoord(coord) else { return }
+        board[coord.row][coord.column] = 1 // set occupied
     }
     
     private func setSpaceFree(coord: GameCoordinate) {
-        guard board[coord.row] != nil else { return }
-        board[coord.row]![coord.column] = 0 // set unoccupied
+        guard isValidCoord(coord) else { return }
+        board[coord.row][coord.column] = 0 // set unoccupied
     }
     
     private func isSpaceFree(coord: GameCoordinate) -> Bool {
@@ -204,7 +221,7 @@ extension GameBoardView {
     
     private func getSpace(coord: GameCoordinate) -> Int {
         guard isValidCoord(coord) else { return -1 }
-        return board[coord.row]![coord.column]
+        return board[coord.row][coord.column]
     }
     
     private func getPiece(coord: GameCoordinate) -> GamePiece {

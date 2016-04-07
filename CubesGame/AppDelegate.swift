@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // generate notifications that the GameViewController will listen for, but...
         UIDevice.currentDevice().beginGeneratingDeviceOrientationNotifications()
-        
+                
         return true
     }
 

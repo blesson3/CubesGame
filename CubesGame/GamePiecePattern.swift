@@ -215,7 +215,7 @@ enum Pattern: UInt32 {
         
     }
     
-    private static let count: Pattern.RawValue = {
+    static let count: Pattern.RawValue = {
         // find the maximum enum value
         var maxValue: UInt32 = 0
         while let _ = Pattern(rawValue: maxValue) {
@@ -408,7 +408,7 @@ class GamePiecePatternGenerator {
     static private func colorForNumber(num: Int) -> UIColor {
         switch num {
         case 1:
-            return ASCFlatUIColor.carrotColor()
+            return ASCFlatUIColor.sunFlowerColor()
         case 2:
             return ASCFlatUIColor.amethystColor()
         case 3:
@@ -418,7 +418,7 @@ class GamePiecePatternGenerator {
         case 5:
             return ASCFlatUIColor.belizeHoleColor()
         default:
-            return ASCFlatUIColor.alizarinColor()
+            return ASCFlatUIColor.pumpkinColor()
         }
     }
 }
