@@ -10,15 +10,18 @@ import Foundation
 
 class GameBoardSolver {
     
-    static var solutions: [[GameCoordinate:Pattern]] = []
+    static var solutions: [[GameCoordinate:PatternOptions]] = []
+    
+    private static var memoisedPatterns:[String:[[String]]] = [:]
     
     // Given a board, solves for every possible set of valid patterns
     // Gives an array of solutions that once applied to the board, work
-    static func solve(_board: [[Int]], _currentSolution: [GameCoordinate:[Pattern]], inout runningSolutions: [[GameCoordinate:[Pattern]]], currentCoord: GameCoordinate) { // -> [[GameCoordinate:Pattern]]
+    static func solve(_board: [[Int]], allSolutions: Bool, _currentSolution: [GameCoordinate:[Pattern]], inout runningSolutions: [[GameCoordinate:[Pattern]]], currentCoord: GameCoordinate) { // -> [[GameCoordinate:Pattern]]
+        
         var board = _board
         var currentSolution = _currentSolution
         
-        let allValidPatterns = getAllValidPatterns()
+        let allValidPatterns: [Pattern] = getAllValidPatterns().shuffle() // shuffle so single isnt always first
         
         if isSpaceFree(board, coord: currentCoord) {
             // try all of the possible patterns, for every pattern that fits, attempt to solve that board
@@ -26,9 +29,9 @@ class GameBoardSolver {
             // placablePatterns
             var placablePatterns: [(pattern: Pattern, coords: [GameCoordinate])] = []
             
-            for p in allValidPatterns {
+            for pattern in allValidPatterns {
                 var patternCanFit = true
-                let patternCoords = getCoordsPatternOccupies(board, pattern: p.encodedPattern(), initialCoord: currentCoord)
+                let patternCoords = getCoordsPatternOccupies(board, encoding: pattern.encoding, initialCoord: currentCoord)
                 for pc in patternCoords {
                     if !isSpaceFree(board, coord: pc) {
                         patternCanFit = false
@@ -41,7 +44,12 @@ class GameBoardSolver {
                 }
                 
                 if patternCanFit {
-                    placablePatterns.append((pattern: p, coords: patternCoords))
+                    placablePatterns.append((pattern: pattern, coords: patternCoords))
+                    
+                    if !allSolutions { // if we only want one solution, one block is fine
+                        break
+                    }
+                    
                 }
             }
             
@@ -55,30 +63,30 @@ class GameBoardSolver {
                 let pattern = placablePatterns.first!.pattern
                 let occupyingCoords = placablePatterns.first!.coords
                 
-                if placablePatterns.count > 1 {
+                if placablePatterns.count > 1 && allSolutions {
                     // more than one placable patterns
                     // place first in solution and spin off placablePatterns.count-1 more solving threads
                     
                     placablePatterns.removeFirst()
                     
-                    for placable in placablePatterns {
+                    for placablePattern in placablePatterns {
                         var alternativeBoard = board // will copy
                         var alterativeCurrentSolution = currentSolution
                         
                         // add to alternative current solution
                         if alterativeCurrentSolution[currentCoord] != nil {
-                            alterativeCurrentSolution[currentCoord]?.append(placable.pattern)
+                            alterativeCurrentSolution[currentCoord]?.append(placablePattern.pattern)
                         }
                         else {
-                            alterativeCurrentSolution[currentCoord] = [placable.pattern]
+                            alterativeCurrentSolution[currentCoord] = [placablePattern.pattern]
                         }
                         
-                        for c in placable.coords {
+                        for c in placablePattern.coords {
                             setSpaceOccupied(&alternativeBoard, coord: c)
                         }
                         
                         // recursively call more solving funcs with the alternative board
-                        solve(alternativeBoard, _currentSolution: alterativeCurrentSolution, runningSolutions: &runningSolutions, currentCoord: currentCoord) // will attempt to increment the current coord
+                        solve(alternativeBoard, allSolutions: true, _currentSolution: alterativeCurrentSolution, runningSolutions: &runningSolutions, currentCoord: currentCoord) // will attempt to increment the current coord
                     }
                 }
                 
@@ -99,24 +107,88 @@ class GameBoardSolver {
             }
         }
         
-        let nextCoord = incrementGameCoordinate(board, coord: currentCoord)
-        if let nc = nextCoord {
-            return solve(board, _currentSolution: currentSolution, runningSolutions: &runningSolutions, currentCoord: nc)
+        // check if the current coord is free, is so then solve for the same coord
+        // if not, then increment and go from there
+        if isSpaceFree(board, coord: currentCoord) {
+            solve(board, allSolutions: allSolutions, _currentSolution: currentSolution, runningSolutions: &runningSolutions, currentCoord: currentCoord)
         }
-        
-        // reached the end of the board, add my currentSolution to my solutions and return everything
-        runningSolutions.append(currentSolution)
+        else {
+            // attempt to increment the currentCoord since the currentCoord spot is filled
+            let nextCoord = incrementGameCoordinate(board, coord: currentCoord)
+            if let nc = nextCoord {
+                solve(board, allSolutions: allSolutions, _currentSolution: currentSolution, runningSolutions: &runningSolutions, currentCoord: nc)
+            }
+            else {
+                // reached the end of the board, add my currentSolution to my solutions and return everything
+                runningSolutions.append(currentSolution)
+            }
+        }
     }
     
+    // useful for determining when no more moves are possible, ending the game
+    static func canPlaceAtLeastOnePattern(board: [[Int]], patterns: [Pattern]) -> Bool {
+        NSLog("Starting can place at least one pattern")
+        // basically meaning, can I place any one piece onto the board
+        for p in patterns {
+            if isPatternPlacable(board, pattern: p) {
+                NSLog("Ending can place at least one pattern - true")
+                return true
+            }
+        }
+        NSLog("Starting can place at least one pattern - false")
+        return false
+    }
     
-    
-    private static func getCoordsPatternOccupies(board: [[Int]], pattern: String, initialCoord: GameCoordinate) -> [GameCoordinate] {
+    static private func isPatternPlacable(board: [[Int]], pattern: Pattern) -> Bool {
+        
+        // all rotated encodings of that pattern
+        var allEncodingsForPattern: Set<String> = []
+        for r in PatternRotateOptions.allRotateOptions() {
+            allEncodingsForPattern.insert(pattern.rotateBy(r).encoding)
+        }
+        
+        var placable: Bool = true
+        
+        for i in 0..<board.count {
+            for j in 0..<board.count {
+                for e in allEncodingsForPattern {
+                    placable = true
+                    let coords = getCoordsPatternOccupies(board, encoding: e, initialCoord: GameCoordinate(row: i, column: j))
+                    for c in coords {
+                        if !isSpaceFree(board, coord: c) {
+                            placable = false
+                            break
+                        }
+                    }
+                    // if at least one encoding is placable, continue
+                    if placable {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+}
+
+// MARK: Helpers
+
+extension GameBoardSolver {
+    private static func getCoordsPatternOccupies(board: [[Int]], encoding: String, initialCoord: GameCoordinate) -> [GameCoordinate] {
         var coords: [GameCoordinate] = []
         
-        let columns = pattern.componentsSeparatedByString("|")
-        for i in 0..<columns.count {
-            let c = columns[i]
-            let rs = c.characters.map { String($0) }
+        let rows: [[String]]
+        
+        if memoisedPatterns[encoding] == nil {
+            let columns = encoding.componentsSeparatedByString("|")
+            rows = columns.map { $0.characters.map { String($0) } }
+        }
+        else {
+            rows = memoisedPatterns[encoding]!
+        }
+        
+        for i in 0..<rows.count {
+            let rs = rows[i]
             for j in 0..<rs.count {
                 let r = rs[j]
                 if r == "1" {
@@ -137,20 +209,16 @@ class GameBoardSolver {
         var c = coord.column
         
         while (!isCoordValid(board, coord: GameCoordinate(row: r, column: c))) {
-            
             r += 1
-            
             if r >= board.count {
                 r = 0
                 c += 1
             }
-            
             if c >= board.count {
                 return nil
             }
         }
         
-        // TODO: ensure the coordinate is incremented
         return GameCoordinate(row: r, column: c)
     }
     
@@ -171,15 +239,23 @@ class GameBoardSolver {
         }
     }
     
+    // returns the [pattern:encoding]
     private static func getAllValidPatterns() -> [Pattern] {
+        // returns all of the unique patterns with all of the rotates
         var patterns: [Pattern] = []
-        // TODO: times 4 for each orientation
-        for i in 0..<Pattern.count {
-            patterns.append(Pattern(rawValue: i)!)
+        var encodings: Set<String> = []
+        for p in PatternOptions.allPatternOptions() {
+            for r in PatternRotateOptions.allRotateOptions() {
+                let p = Pattern(patternOption: p, rotate: r)
+                if encodings.indexOf(p.encoding) == nil {
+                    // we dont have this encoding yet
+                    patterns.append(p)
+                    encodings.insert(p.encoding)
+                }
+            }
         }
-        return patterns.sort { $0.numberOfBlocksRequired() > $1.numberOfBlocksRequired() }
+        return patterns
     }
-    
 }
 
 

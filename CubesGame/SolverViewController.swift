@@ -47,6 +47,11 @@ class SolverViewController: UIViewController {
         // end editing -- for keyboard to be dismissed
         self.view.endEditing(true)
         
+        // reset board if solutions are still showing
+        if solutions.count > 0 {
+            gameBoardView.resetBoard(false) // without animation
+        }
+        
         let currentBoard = gameBoardView.getBoard()
         
         // create board, with existing black or other pieces
@@ -61,7 +66,8 @@ class SolverViewController: UIViewController {
         
         let board = solutionsBoard // just so theres no chance that the board will be modified
         solutions = []
-        GameBoardSolver.solve(board, _currentSolution: [:], runningSolutions: &solutions, currentCoord: GameCoordinate(row: 0, column: 0))
+//        GameBoardSolver.solve(board, _currentSolution: [:], runningSolutions: &solutions, currentCoord: GameCoordinate(row: 0, column: 0))
+        GameBoardSolver.solve(board, allSolutions: true, _currentSolution: [:], runningSolutions: &solutions, currentCoord: GameCoordinate(row: 0, column: 0)) // only solves for one solution
         
         numberOfSolutionsLabel.text = "Solutions: \(solutions.count)"
         
@@ -108,14 +114,14 @@ class SolverViewController: UIViewController {
         // it is the programmers responsibility to ensure this is called for a valid i in the `solutions` array
         // 0..inf
         
-        gameBoardView.resetBoard()
+        gameBoardView.resetBoard(false)
         
         let pieceCushionSize = GameManager.sharedManager.globalPieceSizePlusCushion
         
         for i in 0..<solutionsBoard.count {
             for j in 0..<solutionsBoard.count {
                 if solutionsBoard[i][j] == 1 {
-                    let piecePattern = GamePiecePatternGenerator.generatePattern(.Single, rotate: .None)
+                    let piecePattern = GamePiecePatternGenerator.generatePattern( Pattern(patternOption: .Single, rotate: .None) )
                     piecePattern.setPiecesBackgroundColor(UIColor.blackColor())
                     gameBoardView.placeGamePiecePattern(piecePattern, frameInBoard: CGRect(origin: CGPoint(x: pieceCushionSize*CGFloat(j)+(pieceCushionSize/2), y: pieceCushionSize*CGFloat(i)+(pieceCushionSize/2)), size: piecePattern.bounds.size))
                 }
@@ -125,7 +131,7 @@ class SolverViewController: UIViewController {
         for (coord, patterns) in solutions[i] {
             // the algorithm ensures that the none of the patterns placed on this coordinate are conflicting
             for p in patterns {
-                let piecePattern = GamePiecePatternGenerator.generatePattern(p, rotate: .None)
+                let piecePattern = GamePiecePatternGenerator.generatePattern(p)
                 gameBoardView.placeGamePiecePattern(piecePattern, frameInBoard: CGRect(origin: CGPoint(x: pieceCushionSize*CGFloat(coord.column)+(pieceCushionSize/2), y: pieceCushionSize*CGFloat(coord.row)+(pieceCushionSize/2)), size: piecePattern.bounds.size))
             }
         }
@@ -143,7 +149,7 @@ class SolverViewController: UIViewController {
         // ensure the touch intersections the gameBoardView
         let pointInGameBoard = t.locationInView(gameBoardView)
         let pieceRect = CGRect(origin: CGPoint(x: pointInGameBoard.x-GameManager.sharedManager.globalPieceSizePlusCushion/2, y:pointInGameBoard.y-GameManager.sharedManager.globalPieceSizePlusCushion/2), size: CGSizeMake(GameManager.sharedManager.globalPieceSizePlusCushion, GameManager.sharedManager.globalPieceSizePlusCushion))
-        guard gameBoardView.canPlaceGamePiecePattern(GamePiecePatternGenerator.generatePattern(.Single, rotate: .None), frameInBoard: pieceRect) else { return }
+        guard gameBoardView.canPlaceGamePiecePattern(GamePiecePatternGenerator.generatePattern( Pattern(patternOption: .Single, rotate: .None) ), frameInBoard: pieceRect) else { return }
         
         if solutions.count > 0 {
             solutions = []
@@ -151,7 +157,7 @@ class SolverViewController: UIViewController {
         }
         
         // place a single black piece wherever the user touches
-        let piecePattern = GamePiecePatternGenerator.generatePattern(.Single, rotate: .None)
+        let piecePattern = GamePiecePatternGenerator.generatePattern( Pattern(patternOption: .Single, rotate: .None) )
         piecePattern.setPiecesBackgroundColor(UIColor.blackColor())
         gameBoardView.placeGamePiecePattern(piecePattern, frameInBoard: pieceRect)
         gameBoardView.updateBoardColoring()

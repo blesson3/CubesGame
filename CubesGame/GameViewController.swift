@@ -27,7 +27,7 @@ class GameViewController: UIViewController {
     
     private var currentOrientation: UIDeviceOrientation = .Unknown
     
-    private var scaleDownTransform = CGAffineTransformMakeScale(0.9, 0.9)
+    private var scaleDownTransform = CGAffineTransformMakeScale(0.75, 0.75)
     
     @IBOutlet weak var characterImageView: UIImageView!
     
@@ -75,17 +75,20 @@ class GameViewController: UIViewController {
         
         let difference = GameManager.sharedManager.sliderPageSize-currentPage.count
         
-        // create new pieces
+        let gameBoardPercentFilled = gameBoardView.percentFilled
+        
+        // create new piece(s)
         for _ in 0..<difference {
-            let p = Pattern.randomPattern()
+            // gets pattern based on an algorithm with a varied distribution
+            let pattern: Pattern = Pattern(patternOption: getWeightedRandomPattern(boardFill: Double(gameBoardPercentFilled)), rotate: PatternRotateOptions.randomRotation())
             
-            let pattern = GamePiecePatternGenerator.generatePatternWRandomRotate(p)
-            pattern.touchesHandler = self
-            pattern.center = CGPoint(x: -pattern.bounds.width*1.5, y: piecesSliderView.center.y)
-            pattern.transform = scaleDownTransform
-            self.view.addSubview(pattern)
+            let piecePattern = GamePiecePatternGenerator.generatePattern(pattern)
+            piecePattern.touchesHandler = self
+            piecePattern.center = CGPoint(x: -piecePattern.bounds.width*1.5, y: piecesSliderView.center.y)
+            piecePattern.transform = scaleDownTransform
+            self.view.addSubview(piecePattern)
             
-            currentPage.insert(pattern, atIndex: 0)
+            currentPage.insert(piecePattern, atIndex: 0)
         }
         
         // animate each seperately on screen at x points: 3/16 | 8/16 | 13/16
@@ -100,10 +103,94 @@ class GameViewController: UIViewController {
             i += 1
             j += 5
         }
+        
+        // if the board is around 80% full, check if there is at least one more placing with the current page
+        if gameBoardPercentFilled == 1.0 {
+            MBLog("You win!")
+            GameManager.sharedManager.trackSessionWin()
+            delay(1.0) {
+                showAlert(title: "You Win!", message: "You won! Share with your friends retry?", style: .Alert, buttons: [("Retry?", .Default), ("Ok", .Default)], buttonPressed: { (title) in
+                    switch title! {
+                    case "Retry?":
+                        self.resetButtonPressed(self)
+                    case "Ok":
+                        // do nothing
+                        break
+                    default:
+                        break
+                    }
+                })
+            }
+        }
+        else if gameBoardPercentFilled >= 0.8 && !gameBoardView.solutionExistsWithPatterns(currentPage.map { $0.pattern }) {
+            MBLog("Game over!")
+            GameManager.sharedManager.trackSessionLose()
+            delay(1.0) {
+                showAlert(title: "Game Over!", message: "There are no more moves, retry?", style: .Alert, buttons: [("Retry?", .Default), ("Ok", .Default)], buttonPressed: { (title) in
+                    switch title! {
+                    case "Retry?":
+                        self.resetButtonPressed(self)
+                    case "Ok":
+                        // do nothing
+                        break
+                    default:
+                        break
+                    }
+                })
+            }
+        }
+    }
+    
+    func getWeightedRandomPattern(boardFill boardFill: Double) -> PatternOptions {
+        
+        // cos((2pi/4)x - 2)
+        let boardFillDelta = boardFill*2
+        let distributionEquation: (Double)->Double = { x in
+            return cos(x*M_PI_2-boardFillDelta)
+        }
+        
+        // TODO: move to PatternOptions
+        var patternBucketsByNumber: [Int:[PatternOptions]] = [:]
+        for p in PatternOptions.allPatternOptions() {
+            if patternBucketsByNumber[p.numberOfBlocksRequired()] == nil {
+                patternBucketsByNumber[p.numberOfBlocksRequired()] = [p]
+            }
+            else {
+                patternBucketsByNumber[p.numberOfBlocksRequired()]?.append(p)
+            }
+        }
+        
+        // ratio out all of the buckets
+        var ratioToPatternOptions: [(distPercent: Double, patternOptions: [PatternOptions])] = []
+        var i: Double = 1.0
+        var distSum: Double = 0
+        let numberOfBuckets: Double = Double(patternBucketsByNumber.count)
+        for (_, patternOptions) in patternBucketsByNumber.sort({ $0.0 > $1.0 }) {
+            let ratio: Double = i/numberOfBuckets // 3/7
+            let percentDist = distributionEquation(Double(ratio))*Double(patternOptions.count)
+            ratioToPatternOptions.append((percentDist, patternOptions))
+//            MBLog("\(numberOfBlocksUsed): \(percentDist) with a ratio of \(ratio)")
+            
+            distSum += percentDist
+            i += 1
+        }
+        
+        // now get the ranges for each
+        let randomNumber = Double.random(0.0, distSum)
+        var summingDist: Double = 0
+        for (soloDist, patternOptions) in ratioToPatternOptions.sort({ $0.0 > $1.0 }) {
+            if randomNumber >= summingDist && randomNumber <= summingDist+soloDist {
+                return patternOptions.randomItem()
+            }
+            summingDist += soloDist
+        }
+        
+        return .Single // TODO: implement me
     }
     
     @IBAction func shareButtonPressed(sender: AnyObject) {
         let imageToShare = UIView.captureScreen(self.view)
+        // TODO: fix the link
         let textToShare = "So addicting.\n\nDownload!\nhttp://mylink.com/eEoDks123" // TODO: randomize the text
         let activityItems: [AnyObject] = [textToShare, imageToShare]
         let activity = UIActivity()
@@ -114,6 +201,8 @@ class GameViewController: UIViewController {
     }
     
     @IBAction func resetButtonPressed(sender: AnyObject) {
+        
+        GameManager.sharedManager.trackSessionNotFinished()
         
         // animate each seperately on screen at x points: 3/16 | 8/16 | 13/16, but plus 16 for each numerator because we are animating them offscreen
         var i: CGFloat = 0 // index
@@ -132,6 +221,7 @@ class GameViewController: UIViewController {
         currentPage.removeAll()
         
         delay(0.5) {
+            GameManager.sharedManager.trackSessionStart()
             self.fillPage()
         }
         
@@ -180,8 +270,9 @@ extension GameViewController {
             
             initialTransforms[piecePattern] = piecePattern.transform
             
-            let nextRotation: Pattern.PatternRotate = piecePattern.rotation.getRotationByRotatingCurrentBy(rotate)
-            let rotatedPattern = GamePiecePatternGenerator.generatePattern(piecePattern.pattern, rotate: nextRotation)
+            // generate a dummy piecePattern that will describe what needs to be done to the current piecePattern
+            let nextRotationPattern: Pattern = piecePattern.pattern.rotateBy(rotate)
+            let rotatedPattern = GamePiecePatternGenerator.generatePattern(nextRotationPattern)
             rotatedPattern.center = piecePattern.center
             
             // removes all of the subviews from the piece pattern
@@ -197,7 +288,6 @@ extension GameViewController {
             let center = piecePattern.center
             piecePattern.frame = rotatedPattern.frame
             piecePattern.center = center // need to retain same center
-            piecePattern.rotation = rotatedPattern.rotation
             piecePattern.pattern = rotatedPattern.pattern
             let rotatedTransform = CGAffineTransformMakeRotation(GamePiecePatternGenerator.degreesToRadians(rotate.rawValue))
             piecePattern.transform = CGAffineTransformConcat(piecePattern.transform, rotatedTransform) // artifically rotate backwards to simulate the original

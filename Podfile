@@ -6,7 +6,8 @@ target 'CubesGame' do
     pod 'ASCFlatUIColor'
     pod 'SwiftRandom'
     
-    pod 'Fabric'
-    pod 'Crashlytics'
+#    pod 'Fabric'
+#    pod 'Answers'
+#    pod 'Crashlytics'
 end
 

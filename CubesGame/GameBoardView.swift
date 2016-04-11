@@ -17,12 +17,18 @@ class GameBoardView: UIView {
     private var baseSetup: Bool = false
     
     var boardSize: Int = 10
+    var percentFilled: CGFloat {
+        let numberOccupied = board.reduce(0) { $0+$1.reduce(0) { $1 == 1 ? $0+1 : $0 } }
+        return CGFloat(numberOccupied)/100.0
+    }
     
     private var board: [[Int]] = []            // Row:[Column]
     private var boardColors: [Int:[UIColor]] = [:]  // Row:[Column(Color)]
     private var boardPieces: [[GamePiece]] = []     // boardPieces[Row][Column]
     
     weak var delegate: GameBoardViewDelegate?
+    
+    private var memoisedPatterns:[String:[[String]]] = [:]
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -73,8 +79,32 @@ class GameBoardView: UIView {
         }
     }
     
+    // used for the solving view controller
     internal func getBoard() -> [[Int]] {
         return board
+    }
+}
+
+// MARK: Patterns Suggestions Delegate
+
+extension GameBoardView {
+//    func getSuggestedPatterns() -> [Pattern] {
+//        
+//        // first, solve the board for any one solution
+//        var solutions: [[GameCoordinate : [Pattern]]] = []
+//        GameBoardSolver.solve(board, allSolutions: false, _currentSolution: [:], runningSolutions: &solutions, currentCoord: GameCoordinate(row: 0, column: 0))
+//        
+//        // then iterate through the first solution to get all of the patterns
+//        guard solutions.count > 0 else { fatalError("Solver could not solve board") }
+//        var suggestedPatterns: [Pattern] = []
+//        for (_, patterns) in solutions[0] {
+//            suggestedPatterns.appendContentsOf(patterns)
+//        }
+//        return suggestedPatterns
+//    }
+    
+    func solutionExistsWithPatterns(patterns: [Pattern]) -> Bool {
+        return GameBoardSolver.canPlaceAtLeastOnePattern(board, patterns: patterns)
     }
 }
 
@@ -101,10 +131,10 @@ extension GameBoardView {
     func canPlaceGamePiecePattern(gamePiecePattern: GamePiecePattern, frameInBoard: CGRect) -> Bool {
         let initialCoord = getClosestCoords(frameInBoard)
         
-        MBLog("Closest initial coord (r, c) (\(initialCoord.row), \(initialCoord.column))")
+//        MBLog("Closest initial coord (r, c) (\(initialCoord.row), \(initialCoord.column))")
         
         // incorporate pattern
-        let pattern = gamePiecePattern.pattern.rotatedEncodedPattern(gamePiecePattern.rotation)
+        let pattern = gamePiecePattern.pattern.encoding
         
         let coords = getCoordsPatternOccupies(pattern, initialCoord: initialCoord)
         
@@ -124,9 +154,9 @@ extension GameBoardView {
         guard canPlaceGamePiecePattern(gamePiecePattern, frameInBoard: frameInBoard) else { fatalError("called placeGamePiece while it is found that the piece will not fit") }
         
         // incorporate pattern
-        let pattern = gamePiecePattern.pattern.rotatedEncodedPattern(gamePiecePattern.rotation)
+        let encoding = gamePiecePattern.pattern.encoding
         
-        let coords = getCoordsPatternOccupies(pattern, initialCoord: initialCoord)
+        let coords = getCoordsPatternOccupies(encoding, initialCoord: initialCoord)
         let piecesColor = gamePiecePattern.piecesBackgroundColor
         
         for c in coords {
@@ -161,10 +191,18 @@ extension GameBoardView {
     private func getCoordsPatternOccupies(pattern: String, initialCoord: GameCoordinate) -> [GameCoordinate] {
         var coords: [GameCoordinate] = []
         
-        let columns = pattern.componentsSeparatedByString("|")
-        for i in 0..<columns.count {
-            let c = columns[i]
-            let rs = c.characters.map { String($0) }
+        let rows: [[String]]
+        
+        if memoisedPatterns[pattern] == nil {
+            let columns = pattern.componentsSeparatedByString("|")
+            rows = columns.map { $0.characters.map { String($0) } }
+        }
+        else {
+            rows = memoisedPatterns[pattern]!
+        }
+        
+        for i in 0..<rows.count {
+            let rs = rows[i]
             for j in 0..<rs.count {
                 let r = rs[j]
                 if r == "1" {
@@ -185,15 +223,19 @@ extension GameBoardView {
 
 extension GameBoardView {
     
-    func resetBoard() {
+    func resetBoard(animation: Bool = true) {
         for i in 0..<boardSize {
             for j in 0..<boardSize {
                 let c = GameCoordinate(row: i, column: j)
                 let p = getPiece(c)
-                UIView.animateWithDuration(0.2, delay: Double(i+j)*0.06, options: .CurveEaseInOut, animations: {
+                if animation {
+                    UIView.animateWithDuration(0.2, delay: Double(i+j)*0.06, options: .CurveEaseInOut, animations: {
+                        p.backgroundColor = GamePiece.defaultBackgroundColor
+                        }, completion: { (finished) in
+                    })
+                } else {
                     p.backgroundColor = GamePiece.defaultBackgroundColor
-                    }, completion: { (finished) in
-                })
+                }
                 
                 setSpaceFree(c)
                 pseudoSetCoordColor(c, color: GamePiece.defaultBackgroundColor)

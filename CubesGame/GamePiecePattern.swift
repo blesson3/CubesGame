@@ -13,7 +13,31 @@ import SwiftRandom
 
 // MARK: Pattern
 
-enum Pattern: UInt32 {
+struct Pattern {
+    let patternOption: PatternOptions
+    var rotate: PatternRotateOptions
+    
+    var encoding: String {
+        return patternOption.rotatedEncodedPattern(rotate)
+    }
+    
+    func rotateBy(rotate: OrientationRotate) -> Pattern {
+        return rotateBy(rotate.toPatternRotateOption())
+    }
+    
+    func rotateBy(rotate: PatternRotateOptions) -> Pattern {
+        let newRotation = self.rotate.getRotationByRotatingCurrentBy(rotate)
+        return Pattern(patternOption: patternOption, rotate: newRotation)
+    }
+    
+    static func generateRandomWithRandomRotate() -> Pattern {
+        let patternOption = PatternOptions.randomPattern()
+        let rotate = PatternRotateOptions.randomRotation()
+        return Pattern(patternOption: patternOption, rotate: rotate)
+    }
+}
+
+enum PatternOptions: UInt32 {
     case Single
     
     case SmallL
@@ -27,108 +51,26 @@ enum Pattern: UInt32 {
     case LargeLine
     
     case Weirdo
+    case WeirdoFlip
     
     func numberOfBlocksRequired() -> Int {
         // count the number of 1s in the encoded string
-        return self.encodedPattern().characters.filter({$0 == "1"}).count
+        return self.rotatedEncodedPattern(.None).characters.filter({$0 == "1"}).count
     }
     
-    func encodedPattern() -> String {
-        switch self {
-        case .Single:
-            return "1"
-        case .SmallL:
-            return "1|11"
-        case .LargeL:
-            return "1|1|111"
-        case .SmallSquare:
-            return "11|11"
-        case .LargeSquare:
-            return "111|111|111"
-        case .SmallLine:
-            return "1|1"
-        case .MediumLine:
-            return "1|1|1"
-        case .LargeLine:
-            return "1|1|1|1"
-            
-        case .Weirdo:
-            return "01|11|1"
-        }
-    }
+//    func allRotatedEncodings() -> [PatternRotateOptions:String] {
+//        var encodings: [PatternRotateOptions:String] = [:]
+//        var rotates: [PatternRotateOptions] = []
+//        for i in 0..<PatternRotateOptions.count {
+//            rotates.append(PatternRotateOptions(rawValue: i)!)
+//        }
+//        for r in rotates {
+//            encodings[r] = rotatedEncodedPattern(r)
+//        }
+//        return encodings
+//    }
     
-    enum PatternRotate: UInt32 {
-        case None
-        case Right
-        case Left
-        case UpsideDown
-        
-        var nextRight: PatternRotate {
-            switch self {
-            case .None:
-                return .Right
-            case .Right:
-                return .UpsideDown
-            case .UpsideDown:
-                return .Left
-            case .Left:
-                return .None
-            }
-        }
-        
-        var nextLeft: PatternRotate {
-            switch self {
-            case .None:
-                return .Left
-            case .Right:
-                return .None
-            case .UpsideDown:
-                return .Right
-            case .Left:
-                return .UpsideDown
-            }
-        }
-        
-        func getRotationByRotatingCurrentBy(rotate: OrientationRotate) -> PatternRotate {
-            switch (self, rotate) {
-                
-            case _ where rotate == .None:
-                return self
-                
-            case (.Left, .Right), (.Right, .Left), (.UpsideDown, .UpsideDown):
-                return .None
-                
-            case (.None, .Left), (.UpsideDown, .Right), (.Right, .UpsideDown):
-                return .Left
-                
-            case (.None, .Right), (.UpsideDown, .Left), (.Left, .UpsideDown):
-                return .Right
-                
-            case (.Right, .Right), (.Left, .Left), (.None, .UpsideDown):
-                return .UpsideDown
-                
-            default:
-                fatalError("every case should be above")
-            }
-        }
-        
-        private static let count: PatternRotate.RawValue = {
-            // find the maximum enum value
-            var maxValue: UInt32 = 0
-            while let _ = PatternRotate(rawValue: maxValue) {
-                maxValue += 1
-            }
-            return maxValue
-        }()
-        
-        static func randomRotation() -> PatternRotate {
-            // pick and return a new value
-            let rand = arc4random_uniform(count)
-            return PatternRotate(rawValue: rand)!
-        }
-    }
-    
-    func rotatedEncodedPattern(rotate: PatternRotate) -> String {
+    func rotatedEncodedPattern(rotate: PatternRotateOptions) -> String {
         
         switch self {
         case .Single:
@@ -211,23 +153,134 @@ enum Pattern: UInt32 {
             case .UpsideDown:
                 return "01|11|10"
             }
+            
+        case .WeirdoFlip:
+            switch rotate {
+            case .None:
+                return "1|11|01"
+            case .Right:
+                return "011|11"
+            case .Left:
+                return "011|11"
+            case .UpsideDown:
+                return "1|11|01"
+            }
+            
+//        case .Weirdo:
+//            switch rotate {
+//            case .None:
+//                return "1|11|01"
+//            case .Right:
+//                return "011|11"
+//            case .Left:
+//                return "011|11"
+//            case .UpsideDown:
+//                return "1|11|01"
+//            }
         }
         
     }
     
-    static let count: Pattern.RawValue = {
+    static let count: PatternOptions.RawValue = {
         // find the maximum enum value
         var maxValue: UInt32 = 0
-        while let _ = Pattern(rawValue: maxValue) {
+        while let _ = PatternOptions(rawValue: maxValue) {
             maxValue += 1
         }
         return maxValue
     }()
     
-    static func randomPattern() -> Pattern {
+    static func allPatternOptions() -> [PatternOptions] {
+        var patternOptions: [PatternOptions] = []
+        for i in 0..<count {
+            patternOptions.append(PatternOptions(rawValue: i)!)
+        }
+        return patternOptions
+    }
+    
+    static func randomPattern() -> PatternOptions {
         // pick and return a new value
         let rand = arc4random_uniform(count)
-        return Pattern(rawValue: rand)!
+        return PatternOptions(rawValue: rand)!
+    }
+}
+
+enum PatternRotateOptions: UInt32 {
+    case None
+    case Right
+    case Left
+    case UpsideDown
+    
+    var nextRight: PatternRotateOptions {
+        switch self {
+        case .None:
+            return .Right
+        case .Right:
+            return .UpsideDown
+        case .UpsideDown:
+            return .Left
+        case .Left:
+            return .None
+        }
+    }
+    
+    var nextLeft: PatternRotateOptions {
+        switch self {
+        case .None:
+            return .Left
+        case .Right:
+            return .None
+        case .UpsideDown:
+            return .Right
+        case .Left:
+            return .UpsideDown
+        }
+    }
+    
+    func getRotationByRotatingCurrentBy(rotate: PatternRotateOptions) -> PatternRotateOptions {
+        switch (self, rotate) {
+            
+        case _ where rotate == .None:
+            return self
+            
+        case (.Left, .Right), (.Right, .Left), (.UpsideDown, .UpsideDown):
+            return .None
+            
+        case (.None, .Left), (.UpsideDown, .Right), (.Right, .UpsideDown):
+            return .Left
+            
+        case (.None, .Right), (.UpsideDown, .Left), (.Left, .UpsideDown):
+            return .Right
+            
+        case (.Right, .Right), (.Left, .Left), (.None, .UpsideDown):
+            return .UpsideDown
+            
+        default:
+            fatalError("every case should be above")
+        }
+    }
+    
+    private static let count: PatternRotateOptions.RawValue = {
+        // find the maximum enum value
+        var maxValue: UInt32 = 0
+        while let _ = PatternRotateOptions(rawValue: maxValue) {
+            maxValue += 1
+        }
+        return maxValue
+    }()
+    
+    static func allRotateOptions() -> [PatternRotateOptions] {
+        var patternRotateOptions: [PatternRotateOptions] = []
+        for i in 0..<count {
+            patternRotateOptions.append(PatternRotateOptions(rawValue: i)!)
+        }
+        return patternRotateOptions
+    }
+    
+    static func randomRotation() -> PatternRotateOptions {
+        // pick and return a new value
+        let rand = arc4random_uniform(count)
+        return PatternRotateOptions(rawValue: rand)!
     }
 }
 
@@ -271,6 +324,19 @@ enum OrientationRotate: CGFloat {
             fatalError("Exhausted relative orientation c: \(current) o: \(old)")
         }
     }
+    
+    func toPatternRotateOption() -> PatternRotateOptions {
+        switch self {
+        case .Left:
+            return .Left
+        case .Right:
+            return .Right
+        case .None:
+            return .None
+        case .UpsideDown:
+            return .UpsideDown
+        }
+    }
 }
 
 // MARK: GamePiecePattern
@@ -278,7 +344,7 @@ enum OrientationRotate: CGFloat {
 class GamePiecePattern: UIView {
     private let pieces: [GamePiece]
     var pattern: Pattern
-    var rotation: Pattern.PatternRotate
+//    var rotation: PatternRotateOptions
     
     var piecesBackgroundColor: UIColor {
         return pieces[0].backgroundColor!
@@ -300,10 +366,9 @@ class GamePiecePattern: UIView {
         return pieces[0].frame.origin
     }
     
-    init(frame: CGRect, pattern: Pattern, rotation: Pattern.PatternRotate, pieces: [GamePiece]) {
+    init(frame: CGRect, pattern: Pattern, pieces: [GamePiece]) {
         self.pieces = pieces
         self.pattern = pattern
-        self.rotation = rotation
         super.init(frame: frame)
     }
     
@@ -337,22 +402,22 @@ class GamePiecePattern: UIView {
 
 class GamePiecePatternGenerator {
     
-    static func generatePatternWRandomRotate(pattern: Pattern) -> GamePiecePattern {
-        // get randomly rotated pattern
-        let randomRotation = Pattern.PatternRotate.randomRotation()
-        return generatePattern(pattern, rotate: randomRotation)
-    }
+//    static func generatePatternWRandomRotate(pattern: Pattern) -> GamePiecePattern {
+//        // get randomly rotated pattern
+//        let randomRotation = Pattern.PatternRotate.randomRotation()
+//        return generatePattern(pattern, rotate: randomRotation)
+//    }
     
-    static func generatePattern(pattern: Pattern, rotate: Pattern.PatternRotate) -> GamePiecePattern {
-        MBLog("Generating \(pattern) with rotation \(rotate)")
+    static func generatePattern(pattern: Pattern) -> GamePiecePattern {
+//        MBLog("Generating \(pattern) with rotation \(rotate)")
         
         var pieces: [GamePiece] = []
-        for _ in 0..<pattern.numberOfBlocksRequired() {
+        for _ in 0..<pattern.patternOption.numberOfBlocksRequired() {
             pieces.append(GamePiece())
         }
         
         // create piecePattern
-        let piecePattern = GamePiecePattern(frame: CGRect(x: 0, y: 0, width: GameManager.sharedManager.globalPieceSize, height: GameManager.sharedManager.globalPieceSize), pattern: pattern, rotation: rotate, pieces: pieces)
+        let piecePattern = GamePiecePattern(frame: CGRect(x: 0, y: 0, width: GameManager.sharedManager.globalPieceSize, height: GameManager.sharedManager.globalPieceSize), pattern: pattern, pieces: pieces)
         
         let piecePlusCushion = GameManager.sharedManager.globalPieceSize+GameManager.sharedManager.globalPieceCushion
         
@@ -360,7 +425,7 @@ class GamePiecePatternGenerator {
         var maxY: CGFloat = 0
         
         // get the components of the pattern
-        let patternComponents = pattern.rotatedEncodedPattern(rotate).componentsSeparatedByString("|")
+        let patternComponents = pattern.encoding.componentsSeparatedByString("|")
         
         var k = 0
         for _i in 0..<patternComponents.count { // columns
@@ -396,7 +461,7 @@ class GamePiecePatternGenerator {
 //        piecePattern.backgroundColor = UIColor.redColor().colorWithAlphaComponent(0.4) // TESTING
         
         // set colors based on the number of pieces used for each pattern
-        piecePattern.setPiecesBackgroundColor(colorForNumber(pattern.numberOfBlocksRequired()))
+        piecePattern.setPiecesBackgroundColor(colorForNumber(pattern.patternOption.numberOfBlocksRequired()))
         
         return piecePattern
     }
