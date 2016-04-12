@@ -11,7 +11,7 @@ import UIKit
 @objc protocol TouchesHandler: class {
     func gamePieceTouchesBegan(gamePiecePattern: GamePiecePattern, touches: Set<UITouch>, withEvent event: UIEvent?)
     func gamePieceTouchesMoved(gamePiecePattern: GamePiecePattern, touches: Set<UITouch>, withEvent event: UIEvent?)
-    func gamePieceTouchesEnded(gamePiecePattern: GamePiecePattern, touches: Set<UITouch>, withEvent event: UIEvent?)
+    func gamePieceTouchesEnded(gamePiecePattern: GamePiecePattern, touches: Set<UITouch>?, withEvent event: UIEvent?)
 }
 
 class GameViewController: UIViewController {
@@ -19,7 +19,9 @@ class GameViewController: UIViewController {
     @IBOutlet weak var gameBoardView: GameBoardView!
     @IBOutlet weak var piecesSliderView: UIView!
     @IBOutlet weak var resetButton: UIButton!
+    @IBOutlet weak var resetImageView: UIImageView!
     @IBOutlet weak var shareButton: UIButton!
+    @IBOutlet weak var shareImageView: UIImageView!
     
     private var currentPage: [GamePiecePattern] = []
     private var patternsStartingCenters: [GamePiecePattern:CGPoint] = [:]
@@ -40,11 +42,19 @@ class GameViewController: UIViewController {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
+        // make sure this setup code is not called more than once
         if !viewHasAppeared {
             gameBoardView.backgroundColor = UIColor.clearColor()
             piecesSliderView.backgroundColor = UIColor.clearColor()
             
             gameBoardView.delegate = self
+            
+            // make the share and reset buttons white
+            resetImageView.image = resetImageView.image?.imageWithRenderingMode(.AlwaysTemplate)
+            resetImageView.tintColor = UIColor.whiteColor()
+            
+            shareImageView.image = shareImageView.image?.imageWithRenderingMode(.AlwaysTemplate)
+            shareImageView.tintColor = UIColor.whiteColor()
             
             // Removed orientation changing from gameplay for now
             NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(orientationDidChange(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
@@ -95,11 +105,13 @@ class GameViewController: UIViewController {
         var i: CGFloat = 0 // index
         var j: CGFloat = 3 // x delta
         for piece in currentPage {
-            UIView.animateWithDuration(0.35, delay: 0.07*Double(CGFloat(currentPage.count)-i), usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: .CurveEaseInOut, animations: {
-                piece.center = CGPointMake(self.piecesSliderView.bounds.width*j/16, self.piecesSliderView.center.y)
-                }, completion: { (finished) in
-            })
-            
+            if !piece.beingDragged {
+                UIView.animateWithDuration(0.35, delay: 0.07*Double(CGFloat(currentPage.count)-i), usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [.AllowUserInteraction, .CurveEaseInOut], animations: {
+                    piece.center = self.getPieceCenterForCurrentPage(piece)
+                    }, completion: { (finished) in
+                })
+            }
+           
             i += 1
             j += 5
         }
@@ -124,7 +136,9 @@ class GameViewController: UIViewController {
         }
         else if gameBoardPercentFilled >= 0.8 && !gameBoardView.solutionExistsWithPatterns(currentPage.map { $0.pattern }) {
             MBLog("Game over!")
+            // analytics
             GameManager.sharedManager.trackSessionLose()
+            self.view.userInteractionEnabled = false // disallow the user to make any more moves
             delay(1.0) {
                 showAlert(title: "Game Over!", message: "There are no more moves, retry?", style: .Alert, buttons: [("Retry?", .Default), ("Ok", .Default)], buttonPressed: { (title) in
                     switch title! {
@@ -139,6 +153,11 @@ class GameViewController: UIViewController {
                 })
             }
         }
+    }
+    
+    func getPieceCenterForCurrentPage(gamePiecePattern: GamePiecePattern) -> CGPoint {
+        guard let index = currentPage.indexOf(gamePiecePattern) else { fatalError("Attempting to find a center to a piece in the current page, where not found in the current page") }
+        return CGPointMake(self.piecesSliderView.bounds.width*(3+5*CGFloat(index))/16, self.piecesSliderView.center.y)
     }
     
     func getWeightedRandomPattern(boardFill boardFill: Double) -> PatternOptions {
@@ -167,7 +186,8 @@ class GameViewController: UIViewController {
         let numberOfBuckets: Double = Double(patternBucketsByNumber.count)
         for (_, patternOptions) in patternBucketsByNumber.sort({ $0.0 > $1.0 }) {
             let ratio: Double = i/numberOfBuckets // 3/7
-            let percentDist = distributionEquation(Double(ratio))*Double(patternOptions.count)
+            // set a minimum distribution
+            let percentDist = max(0.15, distributionEquation(Double(ratio))*Double(patternOptions.count))
             ratioToPatternOptions.append((percentDist, patternOptions))
 //            MBLog("\(numberOfBlocksUsed): \(percentDist) with a ratio of \(ratio)")
             
@@ -180,6 +200,7 @@ class GameViewController: UIViewController {
         var summingDist: Double = 0
         for (soloDist, patternOptions) in ratioToPatternOptions.sort({ $0.0 > $1.0 }) {
             if randomNumber >= summingDist && randomNumber <= summingDist+soloDist {
+                // This will return a number
                 return patternOptions.randomItem()
             }
             summingDist += soloDist
@@ -206,22 +227,23 @@ class GameViewController: UIViewController {
         
         // animate each seperately on screen at x points: 3/16 | 8/16 | 13/16, but plus 16 for each numerator because we are animating them offscreen
         var i: CGFloat = 0 // index
-        var j: CGFloat = 3 // x delta
+//        var j: CGFloat = 3 // x delta
         for piece in currentPage {
             UIView.animateWithDuration(0.35, delay: 0.07*Double(CGFloat(currentPage.count)-i), usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: .CurveEaseInOut, animations: {
-                piece.center = CGPointMake(self.piecesSliderView.bounds.width+(self.piecesSliderView.bounds.width*j/16), self.piecesSliderView.center.y)
+                piece.center = self.getPieceCenterForCurrentPage(piece)
                 }, completion: { (finished) in
                     piece.removeFromSuperview()
             })
             
             i += 1
-            j += 5
+//            j += 5
         }
         
         currentPage.removeAll()
         
         delay(0.5) {
             GameManager.sharedManager.trackSessionStart()
+            self.view.userInteractionEnabled = true // enable interaction
             self.fillPage()
         }
         
@@ -392,7 +414,7 @@ extension GameViewController: TouchesHandler {
         
     }
     
-    func gamePieceTouchesEnded(gamePiecePattern: GamePiecePattern, touches: Set<UITouch>, withEvent event: UIEvent?) {
+    func gamePieceTouchesEnded(gamePiecePattern: GamePiecePattern, touches: Set<UITouch>?, withEvent event: UIEvent?) {
         
         // check if the pattern was placed on the board and it can be placed there
         let convertedPiecePatternRect = self.view.convertRect(gamePiecePattern.frame, toView: gameBoardView)
@@ -435,7 +457,8 @@ extension GameViewController: TouchesHandler {
         else {
             // throw that piece back to where it belongs
             UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
-                gamePiecePattern.center = self.patternsStartingCenters[gamePiecePattern]!
+//                gamePiecePattern.center = self.patternsStartingCenters[gamePiecePattern]!
+                gamePiecePattern.center = self.getPieceCenterForCurrentPage(gamePiecePattern)
                 }, completion: { finished in
                     if finished {
                         self.patternsStartingCenters[gamePiecePattern] = nil

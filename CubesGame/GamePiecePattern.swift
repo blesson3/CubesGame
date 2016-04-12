@@ -344,6 +344,9 @@ enum OrientationRotate: CGFloat {
 class GamePiecePattern: UIView {
     private let pieces: [GamePiece]
     var pattern: Pattern
+    
+    private(set) var beingDragged: Bool = false
+    
 //    var rotation: PatternRotateOptions
     
     var piecesBackgroundColor: UIColor {
@@ -384,17 +387,35 @@ class GamePiecePattern: UIView {
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         super.touchesBegan(touches, withEvent: event)
+        beingDragged = true
         touchesHandler?.gamePieceTouchesBegan(self, touches: touches, withEvent: event)
     }
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         super.touchesEnded(touches, withEvent: event)
+        beingDragged = false
         touchesHandler?.gamePieceTouchesEnded(self, touches: touches, withEvent: event)
     }
     
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
         super.touchesMoved(touches, withEvent: event)
         touchesHandler?.gamePieceTouchesMoved(self, touches: touches, withEvent: event)
+    }
+    
+    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
+        super.touchesCancelled(touches, withEvent: event)
+        touchesHandler?.gamePieceTouchesEnded(self, touches: touches, withEvent: event)
+    }
+    
+    override func hitTest(point: CGPoint, withEvent event: UIEvent?) -> UIView? {
+        let ht = super.hitTest(point, withEvent: event)
+        return ht
+    }
+    
+    override func pointInside(point: CGPoint, withEvent event: UIEvent?) -> Bool {
+        let margin: CGFloat = 20
+        let area = CGRectInset(self.bounds, -margin, -margin)
+        return CGRectContainsPoint(area, point)
     }
 }
 
