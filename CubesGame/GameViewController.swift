@@ -36,7 +36,6 @@ class GameViewController: UIViewController {
     
     // flags
     private var viewHasAppeared: Bool = false
-    private let rotationEnabled = false // TODO: move to GameManager
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,7 +56,8 @@ class GameViewController: UIViewController {
             shareImageView.image = shareImageView.image?.imageWithRenderingMode(.AlwaysTemplate)
             shareImageView.tintColor = UIColor.whiteColor()
             
-            if rotationEnabled {
+            // if rotation is enabled, add self to observer for rotation changes
+            if GameManager.sharedManager.rotationEnabled {
                 NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(orientationDidChange(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
             }
         }
@@ -124,7 +124,7 @@ class GameViewController: UIViewController {
         if gameBoardPercentFilled == 1.0 {
             determinedGameWon()
         }
-        else if gameBoardPercentFilled >= 0.8 && !gameBoardView.solutionExistsWithPatterns(currentPage.map { $0.pattern }, rotationEnabled: rotationEnabled) {
+        else if gameBoardPercentFilled >= 0.8 && !gameBoardView.solutionExistsWithPatterns(currentPage.map { $0.pattern }, rotationEnabled: GameManager.sharedManager.rotationEnabled) {
             determinedGameLost()
         }
     }
