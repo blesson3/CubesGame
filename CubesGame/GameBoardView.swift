@@ -26,6 +26,8 @@ class GameBoardView: UIView {
     private var boardColors: [Int:[UIColor]] = [:]  // Row:[Column(Color)]
     private var boardPieces: [[GamePiece]] = []     // boardPieces[Row][Column]
     
+    private var placedPieces: [(piece: GamePiecePattern, coord: GameCoordinate)] = []
+    
     private var memoisedPatterns:[String:[[String]]] = [:]
     
     required init?(coder aDecoder: NSCoder) {
@@ -162,12 +164,16 @@ extension GameBoardView {
             pseudoSetCoordColor(c, color: piecesColor)
         }
         
+        // add the placing to the placedPieces log
+        placedPieces.append((piece: gamePiecePattern, coord: initialCoord))
+        
         let piecePlusCushion = GameManager.sharedManager.globalPieceSizePlusCushion
         
         // -2 to both of the origin points to account for the extra cushion added
         return CGPoint(x: CGFloat(initialCoord.column)*piecePlusCushion, y: CGFloat(initialCoord.row)*piecePlusCushion)//, width: gamePiecePattern.bounds.size.width, height: gamePiecePattern.bounds.size.height)
     }
     
+    // TODO: private?
     func getClosestCoords(rect: CGRect) -> GameCoordinate {
         // reducing frame to single piece
         let pieceSize = GameManager.sharedManager.globalPieceSize
@@ -179,6 +185,11 @@ extension GameBoardView {
         let c = Int(floor(pieceFrame.origin.x/piecePlusCushion)) // column number closest to the left
         let r = Int(floor(pieceFrame.origin.y/piecePlusCushion)) // row number closest to the top
         return GameCoordinate(row: r, column: c)
+    }
+    
+    private func coordToPoint(coord: GameCoordinate) -> CGPoint {
+        let piecePlusCushion = GameManager.sharedManager.globalPieceSizePlusCushion
+        return CGPoint(x: CGFloat(coord.column)*piecePlusCushion, y: CGFloat(coord.row)*piecePlusCushion)
     }
     
     private func getCoordsPatternOccupies(pattern: String, initialCoord: GameCoordinate) -> [GameCoordinate] {
@@ -209,6 +220,33 @@ extension GameBoardView {
         }
         
         return coords
+    }
+}
+
+// MARK: Undo Mechanism
+
+extension GameBoardView {
+    func liftLastPiecePlaced() -> (piece: GamePiecePattern, point: CGPoint)? {
+        guard placedPieces.count > 0 else { return nil }
+        
+        // get and remove the last placed piece
+        let lastPlacedGamePiecePattern = placedPieces.last!
+        placedPieces.removeLast()
+        
+        let piece = lastPlacedGamePiecePattern.piece
+        let coord = lastPlacedGamePiecePattern.coord
+        let point = coordToPoint(coord)
+        
+        // "lift" piece from board
+        let coords = getCoordsPatternOccupies(piece.pattern.encoding, initialCoord: coord)
+        for c in coords {
+            setSpaceFree(c)
+            pseudoSetCoordColor(c, color: GamePiece.defaultBackgroundColor)
+        }
+        
+        updateBoardColoring()
+        
+        return (piece: piece, point: point)
     }
 }
 

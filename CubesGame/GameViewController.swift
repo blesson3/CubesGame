@@ -30,7 +30,9 @@ class GameViewController: UIViewController {
     
     private var currentOrientation: UIDeviceOrientation = .Unknown
     
-    private var scaleDownTransform = CGAffineTransformMakeScale(0.75, 0.75)
+    private let scaleDownTransform = CGAffineTransformMakeScale(0.75, 0.75)
+    private let scaleUpTransform = CGAffineTransformMakeScale(1.1, 1.1)
+    private let scaleUpAlpha: CGFloat = 0.85
     
     @IBOutlet weak var characterImageView: UIImageView!
     
@@ -107,7 +109,6 @@ class GameViewController: UIViewController {
         
         // animate each seperately on screen at x points: 3/16 | 8/16 | 13/16
         var i: CGFloat = 0 // index
-        var j: CGFloat = 3 // x delta
         for piece in currentPage {
             if !piece.beingDragged {
                 UIView.animateWithDuration(0.35, delay: 0.07*Double(CGFloat(currentPage.count)-i), usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [.AllowUserInteraction, .CurveEaseInOut], animations: {
@@ -117,7 +118,6 @@ class GameViewController: UIViewController {
             }
            
             i += 1
-            j += 5
         }
         
         // if the board is around 80% full, check if there is at least one more placing with the current page
@@ -127,6 +127,47 @@ class GameViewController: UIViewController {
         else if gameBoardPercentFilled >= 0.8 && !gameBoardView.solutionExistsWithPatterns(currentPage.map { $0.pattern }, rotationEnabled: GameManager.sharedManager.rotationEnabled) {
             determinedGameLost()
         }
+    }
+    
+    func appendPieceToEndOfCurrentPage(piecePattern: GamePiecePattern) {
+        guard currentPage.count > 0 else { return }
+        
+        // add to end of page, and remove the first
+        currentPage.append(piecePattern)
+        let removedPiecePattern = currentPage.removeFirst()
+        
+        // animate all of the pieces
+        var a = [removedPiecePattern]
+        a.appendContentsOf(currentPage)
+        var i: Double = 0
+        for p in a {
+            
+            if !p.beingDragged {
+                // make the piece moving from the board somewhere take longer
+                UIView.animateWithDuration(Int(i) == a.count-1 ? 0.45 : 0.35, delay: 0.07*i, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: [.AllowUserInteraction, .CurveEaseInOut], animations: {
+                    if i > 0 {
+                        // all currentPage pieces
+                        p.center = self.getPieceCenterForCurrentPage(p)
+                    }
+                    else {
+                        // removed piece
+                        p.center = CGPointMake(-self.piecesSliderView.bounds.width*(3+5*0)/16, self.piecesSliderView.center.y)
+                    }
+                    
+                    // the piece must have been dragged to have been placed on the board, so there will be a starting transform for it
+                    p.transform = self.scaleDownTransform
+                    p.alpha = 1.0
+                    
+                    }, completion: { (finished) in
+                        if finished {
+                            removedPiecePattern.removeFromSuperview()
+                        }
+                })
+            }
+            
+            i += 1
+        }
+        
     }
     
     func determinedGameWon() {
@@ -216,7 +257,6 @@ class GameViewController: UIViewController {
         
         // animate each seperately on screen at x points: 3/16 | 8/16 | 13/16, but plus 16 for each numerator because we are animating them offscreen
         var i: CGFloat = 0 // index
-//        var j: CGFloat = 3 // x delta
         for piece in currentPage {
             UIView.animateWithDuration(0.35, delay: 0.07*Double(CGFloat(currentPage.count)-i), usingSpringWithDamping: 0.8, initialSpringVelocity: 0.1, options: .CurveEaseInOut, animations: {
                 piece.center = self.getPieceCenterForCurrentPage(piece)
@@ -225,7 +265,6 @@ class GameViewController: UIViewController {
             })
             
             i += 1
-//            j += 5
         }
         
         currentPage.removeAll()
@@ -240,7 +279,26 @@ class GameViewController: UIViewController {
     }
     
     @IBAction func undoButtonPressed(sender: AnyObject) {
-        
+        if let lastPlaced = gameBoardView.liftLastPiecePlaced() {
+            
+            let piece = lastPlaced.piece
+            let point = lastPlaced.point
+            
+            piece.frame.origin = gameBoardView.convertPoint(point, toView: self.view)
+            self.view.addSubview(piece)
+            
+            UIView.animateWithDuration(0.2, delay: 0.0, options: [.CurveEaseInOut], animations: {
+                
+                piece.transform = self.scaleUpTransform
+                piece.alpha = self.scaleUpAlpha
+                
+                }, completion: { (finished) in
+                    if finished {
+                        self.appendPieceToEndOfCurrentPage(piece)
+                    }
+            })
+            
+        }
         
     }
     
@@ -353,8 +411,8 @@ extension GameViewController: TouchesHandler {
         
         // animate larger
         UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
-            gamePiecePattern.transform = CGAffineTransformMakeScale(1.1, 1.1)
-            gamePiecePattern.alpha = 0.85
+            gamePiecePattern.transform = self.scaleUpTransform
+            gamePiecePattern.alpha = self.scaleUpAlpha
             }, completion: nil)
         
         // animate center initially
@@ -458,7 +516,6 @@ extension GameViewController: TouchesHandler {
                 }, completion: { finished in
                     if finished {
                         self.patternsStartingCenters[gamePiecePattern] = nil
-                        
                     }
             })
             

@@ -398,6 +398,14 @@ class GamePiecePattern: UIView {
     
     private(set) var beingDragged: Bool = false
     
+    override var description: String {
+        return "GamePiecePattern (UIView): pieces: \(pieces.count), pattern: \(pattern), beingDragged: \(beingDragged)"
+    }
+    
+    override var debugDescription: String {
+        return description
+    }
+    
 //    var rotation: PatternRotateOptions
     
     var piecesBackgroundColor: UIColor {
