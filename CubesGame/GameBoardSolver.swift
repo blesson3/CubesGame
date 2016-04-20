@@ -126,11 +126,11 @@ class GameBoardSolver {
     }
     
     // useful for determining when no more moves are possible, ending the game
-    static func canPlaceAtLeastOnePattern(board: [[Int]], patterns: [Pattern]) -> Bool {
+    static func canPlaceAtLeastOnePattern(board: [[Int]], patterns: [Pattern], rotationEnabled: Bool) -> Bool {
         NSLog("Starting can place at least one pattern")
         // basically meaning, can I place any one piece onto the board
         for p in patterns {
-            if isPatternPlacable(board, pattern: p) {
+            if isPatternPlacable(board, pattern: p, rotationEnabled: rotationEnabled) {
                 NSLog("Ending can place at least one pattern - true")
                 return true
             }
@@ -139,13 +139,19 @@ class GameBoardSolver {
         return false
     }
     
-    static private func isPatternPlacable(board: [[Int]], pattern: Pattern) -> Bool {
+    static private func isPatternPlacable(board: [[Int]], pattern: Pattern, rotationEnabled: Bool) -> Bool {
         
         // all rotated encodings of that pattern
         var allEncodingsForPattern: Set<String> = []
-        for r in PatternRotateOptions.allRotateOptions() {
-            allEncodingsForPattern.insert(pattern.rotateBy(r).encoding)
+        if rotationEnabled {
+            for r in PatternRotateOptions.allRotateOptions() {
+                allEncodingsForPattern.insert(pattern.rotateBy(r).encoding)
+            }
         }
+        else {
+            allEncodingsForPattern.insert(pattern.patternOption.rotatedEncodedPattern(pattern.rotate))
+        }
+        
         
         var placable: Bool = true
         

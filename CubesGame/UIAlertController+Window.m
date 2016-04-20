@@ -7,7 +7,7 @@
 //
 
 #import "UIAlertController+Window.h"
-#import <CubesGame-Swift.h>
+#import <Pikou-Swift.h>
 #import <objc/runtime.h>
 
 @interface UIAlertController (Private)

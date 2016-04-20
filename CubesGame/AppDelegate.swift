@@ -9,6 +9,7 @@
 import UIKit
 import Fabric
 import Crashlytics
+import Appodeal
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -27,7 +28,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // generate notifications that the GameViewController will listen for, but...
         UIDevice.currentDevice().beginGeneratingDeviceOrientationNotifications()
-                
+        
+//        // setup VCs
+//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//        let startingNavController = storyboard.instantiateInitialViewController() as! UINavigationController
+//        
+//        window = UIWindow()
+//        window?.rootViewController = startingNavController
+//        window?.makeKeyAndVisible()
+        
+        let adTypes: AppodealAdType = [.SkippableVideo, .Banner]
+        Appodeal.initializeWithApiKey("c8633a580b5cd1a3a64f1f5085046058eb72520967cc9e06", types: adTypes)
         return true
     }
 
@@ -55,4 +66,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 }
+
+// MARK: CJPAdController override status bar visible
+
+//extension CJPAdController {
+////    public override func prefersStatusBarHidden() -> Bool {
+////        return true
+////    }
+//}
 

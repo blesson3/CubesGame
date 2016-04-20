@@ -9,7 +9,7 @@
         <!--Game View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="GameViewController" customModule="CubesGame" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="GameViewController" customModule="Pikou" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -18,25 +18,22 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MKe-Zn-fgo" userLabel="Board" customClass="GameBoardView" customModule="CubesGame" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MKe-Zn-fgo" userLabel="Board" customClass="GameBoardView" customModule="Pikou" customModuleProvider="target">
                                 <rect key="frame" x="19" y="114" width="282" height="282"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="MKe-Zn-fgo" secondAttribute="height" multiplier="1:1" id="zpC-A2-zY9"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Moy-XB-Bc2" userLabel="Pieces Slider" customClass="PiecesSliderView" customModule="CubesGame" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Moy-XB-Bc2" userLabel="Pieces Slider">
                                 <rect key="frame" x="0.0" y="412" width="320" height="156"/>
                                 <color key="backgroundColor" red="0.78823529410000004" green="0.27450980390000002" blue="0.1333333333" alpha="0.37137522163120557" colorSpace="calibratedRGB"/>
                             </view>
-                            <adBannerView hidden="YES" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aBH-er-LTU">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="66"/>
-                            </adBannerView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="guide_final" translatesAutoresizingMaskIntoConstraints="NO" id="fhV-Aj-cKO">
-                                <rect key="frame" x="20" y="36" width="70" height="70"/>
+                            <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="trial_Guide" translatesAutoresizingMaskIntoConstraints="NO" id="fhV-Aj-cKO">
+                                <rect key="frame" x="20" y="36" width="93" height="70"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="70" id="6fl-w5-pe9"/>
-                                    <constraint firstAttribute="width" secondItem="fhV-Aj-cKO" secondAttribute="height" multiplier="1:1" id="Re8-5W-03M"/>
+                                    <constraint firstAttribute="width" secondItem="fhV-Aj-cKO" secondAttribute="height" multiplier="1309:988" id="Re8-5W-03M"/>
                                 </constraints>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="reset" translatesAutoresizingMaskIntoConstraints="NO" id="LhD-KM-VH4" userLabel="reset image">
@@ -70,6 +67,17 @@
                                     <action selector="shareButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zfb-LS-i6u"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7YV-JO-YTp">
+                                <rect key="frame" x="19" y="77" width="50" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="I2e-iC-TeL"/>
+                                    <constraint firstAttribute="height" constant="30" id="XPG-uk-fVe"/>
+                                </constraints>
+                                <state key="normal" title="Undo"/>
+                                <connections>
+                                    <action selector="undoButtonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="WjJ-ef-Zj1"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.14901960784313725" green="0.14901960784313725" blue="0.14901960784313725" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
@@ -78,8 +86,8 @@
                             <constraint firstAttribute="trailing" secondItem="MKe-Zn-fgo" secondAttribute="trailing" constant="19" id="4ar-TR-lmG"/>
                             <constraint firstItem="Moy-XB-Bc2" firstAttribute="top" secondItem="MKe-Zn-fgo" secondAttribute="bottom" constant="16" id="574-vV-Sgt"/>
                             <constraint firstItem="MKe-Zn-fgo" firstAttribute="top" secondItem="fhV-Aj-cKO" secondAttribute="bottom" constant="8" id="7Ii-wS-S3d"/>
-                            <constraint firstAttribute="trailing" secondItem="aBH-er-LTU" secondAttribute="trailing" id="8Gp-zA-llN"/>
                             <constraint firstItem="LZn-Fp-s5C" firstAttribute="width" secondItem="LhD-KM-VH4" secondAttribute="width" constant="10" id="8OE-st-LxJ"/>
+                            <constraint firstItem="7YV-JO-YTp" firstAttribute="leading" secondItem="MKe-Zn-fgo" secondAttribute="leading" id="9KB-UF-tVl"/>
                             <constraint firstItem="LZn-Fp-s5C" firstAttribute="height" secondItem="LhD-KM-VH4" secondAttribute="height" constant="10" id="B33-op-DBu"/>
                             <constraint firstItem="sd1-dd-2tN" firstAttribute="width" secondItem="sd1-dd-2tN" secondAttribute="height" multiplier="986:864" id="CVz-wQ-S4s"/>
                             <constraint firstItem="MKe-Zn-fgo" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-29" id="Ibg-Lv-IBO"/>
@@ -88,20 +96,20 @@
                             <constraint firstItem="Moy-XB-Bc2" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="MEb-LH-1Rc"/>
                             <constraint firstItem="LZn-Fp-s5C" firstAttribute="centerX" secondItem="LhD-KM-VH4" secondAttribute="centerX" id="Rlt-Zh-XsI"/>
                             <constraint firstItem="a55-8K-zv1" firstAttribute="centerY" secondItem="sd1-dd-2tN" secondAttribute="centerY" id="V7h-Yu-I7G"/>
-                            <constraint firstItem="aBH-er-LTU" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Yyv-N3-ssL"/>
                             <constraint firstItem="LhD-KM-VH4" firstAttribute="trailing" secondItem="MKe-Zn-fgo" secondAttribute="trailing" id="cHy-Qi-Awu"/>
                             <constraint firstItem="a55-8K-zv1" firstAttribute="width" secondItem="sd1-dd-2tN" secondAttribute="width" constant="10" id="diK-qa-AaU"/>
                             <constraint firstItem="a55-8K-zv1" firstAttribute="centerX" secondItem="sd1-dd-2tN" secondAttribute="centerX" id="drE-EP-6co"/>
                             <constraint firstItem="a55-8K-zv1" firstAttribute="height" secondItem="sd1-dd-2tN" secondAttribute="height" constant="10" id="dxF-hb-dN4"/>
                             <constraint firstItem="MKe-Zn-fgo" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="19" id="kpE-qH-U8g"/>
-                            <constraint firstItem="aBH-er-LTU" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="mGT-bP-x2i"/>
                             <constraint firstItem="MKe-Zn-fgo" firstAttribute="top" secondItem="LhD-KM-VH4" secondAttribute="bottom" constant="8" id="me0-rA-3NG"/>
-                            <constraint firstAttribute="topMargin" secondItem="aBH-er-LTU" secondAttribute="top" id="mt9-eW-d62"/>
                             <constraint firstItem="LZn-Fp-s5C" firstAttribute="centerY" secondItem="LhD-KM-VH4" secondAttribute="centerY" id="pxb-RK-el0"/>
                             <constraint firstItem="MKe-Zn-fgo" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="qWj-Kp-mSZ"/>
+                            <constraint firstItem="MKe-Zn-fgo" firstAttribute="top" secondItem="7YV-JO-YTp" secondAttribute="bottom" constant="7" id="ty1-C9-FMf"/>
                             <constraint firstAttribute="bottomMargin" secondItem="Moy-XB-Bc2" secondAttribute="bottom" id="wN4-9X-u8J"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="8S4-z5-u7U"/>
+                    <nil key="simulatedStatusBarMetrics"/>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
                         <outlet property="characterImageView" destination="fhV-Aj-cKO" id="mus-mB-Jgx"/>
@@ -120,7 +128,7 @@
         <!--Solver View Controller-->
         <scene sceneID="cpW-5a-FuI">
             <objects>
-                <viewController id="pEe-Kq-mYZ" customClass="SolverViewController" customModule="CubesGame" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="pEe-Kq-mYZ" customClass="SolverViewController" customModule="Pikou" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="t9D-Wz-mAH"/>
                         <viewControllerLayoutGuide type="bottom" id="imu-CQ-NDr"/>
@@ -129,7 +137,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nut-Mn-3pM" customClass="GameBoardView" customModule="CubesGame" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nut-Mn-3pM" customClass="GameBoardView" customModule="Pikou" customModuleProvider="target">
                                 <rect key="frame" x="19" y="114" width="282" height="282"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -254,8 +262,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="guide_final" width="1024" height="1024"/>
         <image name="reset" width="986" height="864"/>
         <image name="share" width="820" height="1024"/>
+        <image name="trial_Guide" width="1309" height="988"/>
     </resources>
 </document>

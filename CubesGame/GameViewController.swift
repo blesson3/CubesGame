@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Appodeal
 
 @objc protocol TouchesHandler: class {
     func gamePieceTouchesBegan(gamePiecePattern: GamePiecePattern, touches: Set<UITouch>, withEvent event: UIEvent?)
@@ -33,7 +34,9 @@ class GameViewController: UIViewController {
     
     @IBOutlet weak var characterImageView: UIImageView!
     
+    // flags
     private var viewHasAppeared: Bool = false
+    private let rotationEnabled = false // TODO: move to GameManager
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,8 +59,9 @@ class GameViewController: UIViewController {
             shareImageView.image = shareImageView.image?.imageWithRenderingMode(.AlwaysTemplate)
             shareImageView.tintColor = UIColor.whiteColor()
             
-            // Removed orientation changing from gameplay for now
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(orientationDidChange(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
+            if rotationEnabled {
+                NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(orientationDidChange(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
+            }
         }
     }
     
@@ -66,6 +70,8 @@ class GameViewController: UIViewController {
         
         if !viewHasAppeared {
             viewHasAppeared = true
+            
+            Appodeal.showAd(AppodealShowStyle.BannerTop, rootViewController: self)
             
             // for effect
             delay(1.0) {
@@ -118,40 +124,74 @@ class GameViewController: UIViewController {
         
         // if the board is around 80% full, check if there is at least one more placing with the current page
         if gameBoardPercentFilled == 1.0 {
-            MBLog("You win!")
-            GameManager.sharedManager.trackSessionWin()
-            delay(1.0) {
-                showAlert(title: "You Win!", message: "You won! Share with your friends retry?", style: .Alert, buttons: [("Retry?", .Default), ("Ok", .Default)], buttonPressed: { (title) in
-                    switch title! {
-                    case "Retry?":
-                        self.resetButtonPressed(self)
-                    case "Ok":
-                        // do nothing
-                        break
-                    default:
-                        break
-                    }
-                })
-            }
+            determinedGameWon()
         }
-        else if gameBoardPercentFilled >= 0.8 && !gameBoardView.solutionExistsWithPatterns(currentPage.map { $0.pattern }) {
-            MBLog("Game over!")
-            // analytics
-            GameManager.sharedManager.trackSessionLose()
-            self.view.userInteractionEnabled = false // disallow the user to make any more moves
-            delay(1.0) {
-                showAlert(title: "Game Over!", message: "There are no more moves, retry?", style: .Alert, buttons: [("Retry?", .Default), ("Ok", .Default)], buttonPressed: { (title) in
-                    switch title! {
-                    case "Retry?":
-                        self.resetButtonPressed(self)
-                    case "Ok":
-                        // do nothing
-                        break
-                    default:
-                        break
+        else if gameBoardPercentFilled >= 0.8 && !gameBoardView.solutionExistsWithPatterns(currentPage.map { $0.pattern }, rotationEnabled: rotationEnabled) {
+            determinedGameLost()
+        }
+    }
+    
+    func determinedGameWon() {
+        MBLog("You win!")
+        GameManager.sharedManager.trackSessionWin()
+        delay(1.0) {
+            showAlert(title: "You Win!", message: "You won! Share with your friends retry?", style: .Alert, buttons: [("Retry?", .Default), ("Ok", .Default)], buttonPressed: { (title) in
+                switch title! {
+                case "Retry?":
+                    self.resetButtonPressed(self)
+                case "Ok":
+                    // do nothing
+                    break
+                default:
+                    break
+                }
+                
+                // show ad
+                delay(0.5) {
+                    // First check for videos loaded, then interstitial
+                    let adStylePriority:[AppodealShowStyle] = [.SkippableVideo, .Interstitial]
+                    for s in adStylePriority {
+                        if Appodeal.isReadyForShowWithStyle(s) {
+                            Appodeal.showAd(s, rootViewController: self)
+                        }
                     }
-                })
-            }
+                }
+            })
+        }
+
+    }
+    
+    func determinedGameLost() {
+        MBLog("Game over!")
+        // analytics
+        GameManager.sharedManager.trackSessionLose()
+        
+        // fix: this causes a problem that the user is unable to retry if okay is pressed in the following prompt
+//        self.view.userInteractionEnabled = false // disallow the user to make any more moves
+        
+        delay(2.0) {
+            showAlert(title: "Game Over!", message: "There are no more moves, retry?", style: .Alert, buttons: [("Retry?", .Default), ("Ok", .Default)], buttonPressed: { (title) in
+                switch title! {
+                case "Retry?":
+                    self.resetButtonPressed(self)
+                case "Ok":
+                    // do nothing
+                    break
+                default:
+                    break
+                }
+                
+                // show ad
+                delay(0.5) {
+                    // First check for videos loaded, then interstitial
+                    let adStylePriority:[AppodealShowStyle] = [.SkippableVideo, .Interstitial]
+                    for s in adStylePriority {
+                        if Appodeal.isReadyForShowWithStyle(s) {
+                            Appodeal.showAd(s, rootViewController: self)
+                        }
+                    }
+                }
+            })
         }
     }
     
@@ -248,6 +288,11 @@ class GameViewController: UIViewController {
         }
         
         gameBoardView.resetBoard()
+    }
+    
+    @IBAction func undoButtonPressed(sender: AnyObject) {
+        
+        
     }
     
     override func prefersStatusBarHidden() -> Bool {
@@ -360,6 +405,7 @@ extension GameViewController: TouchesHandler {
         // animate larger
         UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
             gamePiecePattern.transform = CGAffineTransformMakeScale(1.1, 1.1)
+            gamePiecePattern.alpha = 0.85
             }, completion: nil)
         
         // animate center initially
@@ -452,6 +498,7 @@ extension GameViewController: TouchesHandler {
             // shink back to normal size
             UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
                 gamePiecePattern.transform = CGAffineTransformIdentity
+                gamePiecePattern.alpha = 1.0
                 }, completion: nil)
         }
         else {
@@ -462,12 +509,14 @@ extension GameViewController: TouchesHandler {
                 }, completion: { finished in
                     if finished {
                         self.patternsStartingCenters[gamePiecePattern] = nil
+                        
                     }
             })
             
             // shink back to normal size
             UIView.animateWithDuration(0.2, delay: 0.0, options: .CurveEaseInOut, animations: {
                 gamePiecePattern.transform = self.patternsStartingTransforms[gamePiecePattern]!
+                gamePiecePattern.alpha = 1.0
                 }, completion: nil)
         }
     }

@@ -18,7 +18,11 @@ class GameBoardView: UIView {
     
     var boardSize: Int = 10
     var percentFilled: CGFloat {
-        let numberOccupied = board.reduce(0) { $0+$1.reduce(0) { $1 == 1 ? $0+1 : $0 } }
+        let numberOccupied = board.reduce(0) { i, j in
+            i+(j.reduce(0) { i2, j2 in
+                j2 == 1 ? i2+1 : i2
+            } as Int) // as Int added to silence swift's `expression was too complex` stupid thing
+        }
         return CGFloat(numberOccupied)/100.0
     }
     
@@ -103,8 +107,8 @@ extension GameBoardView {
 //        return suggestedPatterns
 //    }
     
-    func solutionExistsWithPatterns(patterns: [Pattern]) -> Bool {
-        return GameBoardSolver.canPlaceAtLeastOnePattern(board, patterns: patterns)
+    func solutionExistsWithPatterns(patterns: [Pattern], rotationEnabled: Bool) -> Bool {
+        return GameBoardSolver.canPlaceAtLeastOnePattern(board, patterns: patterns, rotationEnabled: rotationEnabled)
     }
 }
 

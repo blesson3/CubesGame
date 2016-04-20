@@ -7,6 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F26AE721CC6A4F600CC3E74 /* Screenshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F26AE711CC6A4F600CC3E74 /* Screenshot.swift */; };
+		1F26AE791CC6A50900CC3E74 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F26AE691CC6A4D500CC3E74 /* SnapshotHelper.swift */; };
+		1F952DD71CC48A5F009C4031 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F952DD61CC48A5F009C4031 /* AdSupport.framework */; };
+		1F952DD91CC48A66009C4031 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F952DD81CC48A66009C4031 /* AudioToolbox.framework */; };
+		1F952DDB1CC48A78009C4031 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F952DDA1CC48A78009C4031 /* CoreGraphics.framework */; };
+		1F952DDD1CC48A7E009C4031 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F952DDC1CC48A7E009C4031 /* CoreTelephony.framework */; };
+		1F952DDF1CC48A88009C4031 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F952DDE1CC48A88009C4031 /* StoreKit.framework */; };
+		1F952DE11CC48A90009C4031 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F952DE01CC48A90009C4031 /* SystemConfiguration.framework */; };
+		1F952DE31CC48A97009C4031 /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F952DE21CC48A97009C4031 /* EventKit.framework */; };
+		1F952DE51CC48A9D009C4031 /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F952DE41CC48A9D009C4031 /* EventKitUI.framework */; };
+		1F952DE71CC59FDE009C4031 /* UINavigationControllerNoStatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F952DE61CC59FDE009C4031 /* UINavigationControllerNoStatusBar.swift */; };
 		9B4C26E5F3CC878631ABB9D2 /* Pods_CubesGame.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3322A3906390DAC98348656E /* Pods_CubesGame.framework */; };
 		D92442141CB19F68003DA666 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92442131CB19F68003DA666 /* AppDelegate.swift */; };
 		D92442161CB19F68003DA666 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92442151CB19F68003DA666 /* GameViewController.swift */; };
@@ -36,9 +47,32 @@
 		D9F28EC81CB33CF600BE4FFB /* GameSoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F28EC71CB33CF600BE4FFB /* GameSoundManager.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		1F26AE741CC6A4F600CC3E74 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D92442081CB19F68003DA666 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D924420F1CB19F68003DA666;
+			remoteInfo = Pikou;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		1F26AE691CC6A4D500CC3E74 /* SnapshotHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = SOURCE_ROOT; };
+		1F26AE6F1CC6A4F600CC3E74 /* Screenshot.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Screenshot.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F26AE711CC6A4F600CC3E74 /* Screenshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Screenshot.swift; sourceTree = "<group>"; };
+		1F26AE731CC6A4F600CC3E74 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1F952DD61CC48A5F009C4031 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
+		1F952DD81CC48A66009C4031 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		1F952DDA1CC48A78009C4031 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		1F952DDC1CC48A7E009C4031 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		1F952DDE1CC48A88009C4031 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		1F952DE01CC48A90009C4031 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		1F952DE21CC48A97009C4031 /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
+		1F952DE41CC48A9D009C4031 /* EventKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKitUI.framework; path = System/Library/Frameworks/EventKitUI.framework; sourceTree = SDKROOT; };
+		1F952DE61CC59FDE009C4031 /* UINavigationControllerNoStatusBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UINavigationControllerNoStatusBar.swift; sourceTree = "<group>"; };
 		3322A3906390DAC98348656E /* Pods_CubesGame.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CubesGame.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D92442101CB19F68003DA666 /* CubesGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CubesGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D92442101CB19F68003DA666 /* Pikou.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pikou.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D92442131CB19F68003DA666 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D92442151CB19F68003DA666 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		D92442181CB19F68003DA666 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -54,7 +88,7 @@
 		D9B08B671CB5398500F792BC /* UIView-Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView-Extensions.swift"; sourceTree = "<group>"; };
 		D9B08B6C1CB53A8F00F792BC /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		D9B08B6E1CB53B1300F792BC /* Helper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
-		D9B08B701CB53B8100F792BC /* CubesGame-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CubesGame-Bridging-Header.h"; sourceTree = "<group>"; };
+		D9B08B701CB53B8100F792BC /* Pikou-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Pikou-Bridging-Header.h"; sourceTree = "<group>"; };
 		D9B08B711CB53B8100F792BC /* UIAlertController+Window.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIAlertController+Window.h"; sourceTree = "<group>"; };
 		D9B08B721CB53B8100F792BC /* UIAlertController+Window.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertController+Window.m"; sourceTree = "<group>"; };
 		D9B08B761CB53E0800F792BC /* UIViewControllerNoStatusBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewControllerNoStatusBar.swift; sourceTree = "<group>"; };
@@ -73,13 +107,28 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1F26AE6C1CC6A4F600CC3E74 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D924420D1CB19F68003DA666 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F952DE51CC48A9D009C4031 /* EventKitUI.framework in Frameworks */,
+				1F952DE31CC48A97009C4031 /* EventKit.framework in Frameworks */,
+				1F952DE11CC48A90009C4031 /* SystemConfiguration.framework in Frameworks */,
+				1F952DDF1CC48A88009C4031 /* StoreKit.framework in Frameworks */,
+				1F952DDD1CC48A7E009C4031 /* CoreTelephony.framework in Frameworks */,
+				1F952DDB1CC48A78009C4031 /* CoreGraphics.framework in Frameworks */,
+				D9F28EBF1CB33BC900BE4FFB /* AVFoundation.framework in Frameworks */,
+				1F952DD91CC48A66009C4031 /* AudioToolbox.framework in Frameworks */,
+				1F952DD71CC48A5F009C4031 /* AdSupport.framework in Frameworks */,
 				D9B08B6D1CB53A8F00F792BC /* MessageUI.framework in Frameworks */,
 				D96A8AFA1CB97444006E43D7 /* Fabric.framework in Frameworks */,
-				D9F28EBF1CB33BC900BE4FFB /* AVFoundation.framework in Frameworks */,
 				D9A6CBA21CB1EE3B00B7A6DE /* iAd.framework in Frameworks */,
 				D96A8AFB1CB97444006E43D7 /* Crashlytics.framework in Frameworks */,
 				9B4C26E5F3CC878631ABB9D2 /* Pods_CubesGame.framework in Frameworks */,
@@ -89,10 +138,29 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1F2214471CC5B21C0000D676 /* UINavigationControllerNoStatusBar */ = {
+			isa = PBXGroup;
+			children = (
+				1F952DE61CC59FDE009C4031 /* UINavigationControllerNoStatusBar.swift */,
+			);
+			name = UINavigationControllerNoStatusBar;
+			sourceTree = "<group>";
+		};
+		1F26AE701CC6A4F600CC3E74 /* Screenshot */ = {
+			isa = PBXGroup;
+			children = (
+				1F26AE691CC6A4D500CC3E74 /* SnapshotHelper.swift */,
+				1F26AE711CC6A4F600CC3E74 /* Screenshot.swift */,
+				1F26AE731CC6A4F600CC3E74 /* Info.plist */,
+			);
+			path = Screenshot;
+			sourceTree = "<group>";
+		};
 		D92442071CB19F68003DA666 = {
 			isa = PBXGroup;
 			children = (
 				D92442121CB19F68003DA666 /* CubesGame */,
+				1F26AE701CC6A4F600CC3E74 /* Screenshot */,
 				D92442111CB19F68003DA666 /* Products */,
 				F12D2AF6105033FD4B68826F /* Pods */,
 				FD246F6450BF3051932A32FD /* Frameworks */,
@@ -102,7 +170,8 @@
 		D92442111CB19F68003DA666 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D92442101CB19F68003DA666 /* CubesGame.app */,
+				D92442101CB19F68003DA666 /* Pikou.app */,
+				1F26AE6F1CC6A4F600CC3E74 /* Screenshot.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -110,7 +179,7 @@
 		D92442121CB19F68003DA666 /* CubesGame */ = {
 			isa = PBXGroup;
 			children = (
-				D9B08B701CB53B8100F792BC /* CubesGame-Bridging-Header.h */,
+				D9B08B701CB53B8100F792BC /* Pikou-Bridging-Header.h */,
 				D9B08B691CB5399800F792BC /* Extensions/Helpers */,
 				D92442131CB19F68003DA666 /* AppDelegate.swift */,
 				D9B08B6A1CB539AE00F792BC /* Managers */,
@@ -196,6 +265,7 @@
 			isa = PBXGroup;
 			children = (
 				D9B08B741CB53B9900F792BC /* UIAlertController+Window */,
+				1F2214471CC5B21C0000D676 /* UINavigationControllerNoStatusBar */,
 			);
 			name = External;
 			sourceTree = "<group>";
@@ -222,6 +292,14 @@
 		FD246F6450BF3051932A32FD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1F952DE41CC48A9D009C4031 /* EventKitUI.framework */,
+				1F952DE21CC48A97009C4031 /* EventKit.framework */,
+				1F952DE01CC48A90009C4031 /* SystemConfiguration.framework */,
+				1F952DDE1CC48A88009C4031 /* StoreKit.framework */,
+				1F952DDC1CC48A7E009C4031 /* CoreTelephony.framework */,
+				1F952DDA1CC48A78009C4031 /* CoreGraphics.framework */,
+				1F952DD81CC48A66009C4031 /* AudioToolbox.framework */,
+				1F952DD61CC48A5F009C4031 /* AdSupport.framework */,
 				D96A8AF81CB97444006E43D7 /* Fabric.framework */,
 				D96A8AF91CB97444006E43D7 /* Crashlytics.framework */,
 				D9B08B6C1CB53A8F00F792BC /* MessageUI.framework */,
@@ -235,9 +313,27 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D924420F1CB19F68003DA666 /* CubesGame */ = {
+		1F26AE6E1CC6A4F600CC3E74 /* Screenshot */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D92442221CB19F68003DA666 /* Build configuration list for PBXNativeTarget "CubesGame" */;
+			buildConfigurationList = 1F26AE761CC6A4F600CC3E74 /* Build configuration list for PBXNativeTarget "Screenshot" */;
+			buildPhases = (
+				1F26AE6B1CC6A4F600CC3E74 /* Sources */,
+				1F26AE6C1CC6A4F600CC3E74 /* Frameworks */,
+				1F26AE6D1CC6A4F600CC3E74 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1F26AE751CC6A4F600CC3E74 /* PBXTargetDependency */,
+			);
+			name = Screenshot;
+			productName = Screenshot;
+			productReference = 1F26AE6F1CC6A4F600CC3E74 /* Screenshot.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		D924420F1CB19F68003DA666 /* Pikou */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D92442221CB19F68003DA666 /* Build configuration list for PBXNativeTarget "Pikou" */;
 			buildPhases = (
 				CD0734C97E881441A2218414 /* Check Pods Manifest.lock */,
 				D924420C1CB19F68003DA666 /* Sources */,
@@ -252,9 +348,9 @@
 			);
 			dependencies = (
 			);
-			name = CubesGame;
+			name = Pikou;
 			productName = CubesGame;
-			productReference = D92442101CB19F68003DA666 /* CubesGame.app */;
+			productReference = D92442101CB19F68003DA666 /* Pikou.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -267,12 +363,17 @@
 				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = "Matt Blessed";
 				TargetAttributes = {
+					1F26AE6E1CC6A4F600CC3E74 = {
+						CreatedOnToolsVersion = 7.3;
+						TestTargetID = D924420F1CB19F68003DA666;
+					};
 					D924420F1CB19F68003DA666 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = L88FMNUJ5E;
 					};
 				};
 			};
-			buildConfigurationList = D924420B1CB19F68003DA666 /* Build configuration list for PBXProject "CubesGame" */;
+			buildConfigurationList = D924420B1CB19F68003DA666 /* Build configuration list for PBXProject "Pikou" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -285,12 +386,20 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D924420F1CB19F68003DA666 /* CubesGame */,
+				D924420F1CB19F68003DA666 /* Pikou */,
+				1F26AE6E1CC6A4F600CC3E74 /* Screenshot */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		1F26AE6D1CC6A4F600CC3E74 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D924420E1CB19F68003DA666 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -383,6 +492,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1F26AE6B1CC6A4F600CC3E74 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F26AE721CC6A4F600CC3E74 /* Screenshot.swift in Sources */,
+				1F26AE791CC6A50900CC3E74 /* SnapshotHelper.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D924420C1CB19F68003DA666 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -394,6 +512,7 @@
 				D942BCB81CB5FFDC0097275A /* GameBoardSolver.swift in Sources */,
 				D9EA66631CB1BA5A000CCF29 /* GameManager.swift in Sources */,
 				D9EA665D1CB1A635000CCF29 /* GamePiece.swift in Sources */,
+				1F952DE71CC59FDE009C4031 /* UINavigationControllerNoStatusBar.swift in Sources */,
 				D9BEC9421CB6DD5900E56423 /* Array-Extensions.swift in Sources */,
 				D9B08B731CB53B8100F792BC /* UIAlertController+Window.m in Sources */,
 				D9B08B681CB5398500F792BC /* UIView-Extensions.swift in Sources */,
@@ -406,6 +525,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1F26AE751CC6A4F600CC3E74 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D924420F1CB19F68003DA666 /* Pikou */;
+			targetProxy = 1F26AE741CC6A4F600CC3E74 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		D92442171CB19F68003DA666 /* Main.storyboard */ = {
@@ -427,10 +554,33 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		1F26AE771CC6A4F600CC3E74 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = Screenshot/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattblessed.Screenshot;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = Pikou;
+			};
+			name = Debug;
+		};
+		1F26AE781CC6A4F600CC3E74 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = Screenshot/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattblessed.Screenshot;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = Pikou;
+			};
+			name = Release;
+		};
 		D92442201CB19F68003DA666 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -448,6 +598,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -467,6 +618,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -476,6 +628,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -493,6 +646,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -505,6 +659,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -515,8 +670,11 @@
 			baseConfigurationReference = FE231D1B2DD9E541B66A3BD7 /* Pods-CubesGame.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -525,8 +683,9 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattblessed.CubesGame;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "CubesGame/CubesGame-Bridging-Header.h";
+				PRODUCT_NAME = Pikou;
+				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "CubesGame/Pikou-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -536,8 +695,11 @@
 			baseConfigurationReference = FF642E505D099092F2F4A6B8 /* Pods-CubesGame.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -546,15 +708,25 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattblessed.CubesGame;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "CubesGame/CubesGame-Bridging-Header.h";
+				PRODUCT_NAME = Pikou;
+				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "CubesGame/Pikou-Bridging-Header.h";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D924420B1CB19F68003DA666 /* Build configuration list for PBXProject "CubesGame" */ = {
+		1F26AE761CC6A4F600CC3E74 /* Build configuration list for PBXNativeTarget "Screenshot" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F26AE771CC6A4F600CC3E74 /* Debug */,
+				1F26AE781CC6A4F600CC3E74 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D924420B1CB19F68003DA666 /* Build configuration list for PBXProject "Pikou" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D92442201CB19F68003DA666 /* Debug */,
@@ -563,7 +735,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D92442221CB19F68003DA666 /* Build configuration list for PBXNativeTarget "CubesGame" */ = {
+		D92442221CB19F68003DA666 /* Build configuration list for PBXNativeTarget "Pikou" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D92442231CB19F68003DA666 /* Debug */,

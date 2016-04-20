@@ -11,7 +11,7 @@ import UIKit
 
 class GamePiece: UIView {
     
-    static let defaultBackgroundColor: UIColor = UIColor(red: 57.0/255.0, green: 57.0/255.0, blue: 57.0/255.0, alpha: 1.0)
+    static let defaultBackgroundColor: UIColor = UIColor(red: 79.0/255.0, green: 79.0/255.0, blue: 79.0/255.0, alpha: 1.0)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
