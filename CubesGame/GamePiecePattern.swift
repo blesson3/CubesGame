@@ -58,18 +58,6 @@ enum PatternOptions: UInt32 {
         return self.rotatedEncodedPattern(.None).characters.filter({$0 == "1"}).count
     }
     
-//    func allRotatedEncodings() -> [PatternRotateOptions:String] {
-//        var encodings: [PatternRotateOptions:String] = [:]
-//        var rotates: [PatternRotateOptions] = []
-//        for i in 0..<PatternRotateOptions.count {
-//            rotates.append(PatternRotateOptions(rawValue: i)!)
-//        }
-//        for r in rotates {
-//            encodings[r] = rotatedEncodedPattern(r)
-//        }
-//        return encodings
-//    }
-    
     func rotatedEncodedPattern(rotate: PatternRotateOptions) -> String {
         
         switch self {
@@ -179,6 +167,35 @@ enum PatternOptions: UInt32 {
 //            }
         }
         
+    }
+    
+    var color: UIColor {
+        switch self {
+        case Single:
+            return UIColor(red: 255.0/255.0, green: 35.0/255.0, blue: 0.0/255.0, alpha: 1.0)
+            
+        case SmallL:
+            return UIColor(red: 239.0/255.0, green: 192.0/255.0, blue: 26.0/255.0, alpha: 1.0)
+        case LargeL:
+            return UIColor(red: 255.0/255.0, green: 134.0/255.0, blue: 0.0/255.0, alpha: 1.0)
+            
+        case SmallSquare:
+            return UIColor(red: 33.0/255.0, green: 135.0/255.0, blue: 252.0/255.0, alpha: 1.0)
+        case LargeSquare:
+            return UIColor(red: 240.0/255.0, green: 24.0/255.0, blue: 171.0/255.0, alpha: 1.0)
+            
+        case SmallLine:
+            return UIColor(red: 129.0/255.0, green: 219.0/255.0, blue: 29.0/255.0, alpha: 1.0)
+        case MediumLine:
+            return UIColor(red: 255.0/255.0, green: 222.0/255.0, blue: 36.0/255.0, alpha: 1.0)
+        case LargeLine:
+            return UIColor(red: 32.0/255.0, green: 44.0/255.0, blue: 237.0/255.0, alpha: 1.0)
+            
+        case Weirdo:
+            return UIColor(red: 0.0/255.0, green: 200.0/255.0, blue: 255.0/255.0, alpha: 1.0)
+        case WeirdoFlip:
+            return UIColor(red: 35.0/255.0, green: 233.0/255.0, blue: 255.0/255.0, alpha: 1.0)
+        }
     }
     
     static let count: PatternOptions.RawValue = {
@@ -541,29 +558,12 @@ class GamePiecePatternGenerator {
 //        piecePattern.backgroundColor = UIColor.redColor().colorWithAlphaComponent(0.4) // TESTING
         
         // set colors based on the number of pieces used for each pattern
-        piecePattern.setPiecesBackgroundColor(colorForNumber(pattern.patternOption.numberOfBlocksRequired()))
+        piecePattern.setPiecesBackgroundColor(pattern.patternOption.color)
         
         return piecePattern
     }
     
     static func degreesToRadians(degrees: CGFloat) -> CGFloat {
         return CGFloat(M_PI)*degrees/180.0
-    }
-    
-    static private func colorForNumber(num: Int) -> UIColor {
-        switch num {
-        case 1:
-            return ASCFlatUIColor.sunFlowerColor()
-        case 2:
-            return ASCFlatUIColor.amethystColor()
-        case 3:
-            return ASCFlatUIColor.pomegranateColor()
-        case 4:
-            return ASCFlatUIColor.greenSeaColor()
-        case 5:
-            return ASCFlatUIColor.belizeHoleColor()
-        default:
-            return ASCFlatUIColor.pumpkinColor()
-        }
     }
 }
