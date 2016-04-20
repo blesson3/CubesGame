@@ -203,6 +203,57 @@ enum PatternOptions: UInt32 {
         let rand = arc4random_uniform(count)
         return PatternOptions(rawValue: rand)!
     }
+    
+    // uses discrete distribution
+    static func getWeightedRandomPattern(boardFill boardFill: Double) -> PatternOptions {
+        
+        // cos((2pi/4)x - 2)
+        let boardFillDelta = boardFill*2
+        let distributionEquation: (Double)->Double = { x in
+            return cos(x*M_PI_2-boardFillDelta)
+        }
+        
+        // TODO: move to PatternOptions
+        var patternBucketsByNumber: [Int:[PatternOptions]] = [:]
+        for p in PatternOptions.allPatternOptions() {
+            if patternBucketsByNumber[p.numberOfBlocksRequired()] == nil {
+                patternBucketsByNumber[p.numberOfBlocksRequired()] = [p]
+            }
+            else {
+                patternBucketsByNumber[p.numberOfBlocksRequired()]?.append(p)
+            }
+        }
+        
+        // ratio out all of the buckets
+        var ratioToPatternOptions: [(distPercent: Double, patternOptions: [PatternOptions])] = []
+        var i: Double = 1.0
+        var distSum: Double = 0
+        let numberOfBuckets: Double = Double(patternBucketsByNumber.count)
+        for (_, patternOptions) in patternBucketsByNumber.sort({ $0.0 > $1.0 }) {
+            let ratio: Double = i/numberOfBuckets // 3/7
+            // set a minimum distribution
+            let percentDist = max(0.15, distributionEquation(Double(ratio))*Double(patternOptions.count))
+            ratioToPatternOptions.append((percentDist, patternOptions))
+            //            MBLog("\(numberOfBlocksUsed): \(percentDist) with a ratio of \(ratio)")
+            
+            distSum += percentDist
+            i += 1
+        }
+        
+        // now get the ranges for each
+        let randomNumber = Double.random(0.0, distSum)
+        var summingDist: Double = 0
+        // find the ratio that is in the range of the random number
+        for (soloDist, patternOptions) in ratioToPatternOptions.sort({ $0.0 > $1.0 }) {
+            if randomNumber >= summingDist && randomNumber <= summingDist+soloDist {
+                // This will return a number
+                return patternOptions.randomItem()
+            }
+            summingDist += soloDist
+        }
+        
+        return .Single // TODO: implement me
+    }
 }
 
 enum PatternRotateOptions: UInt32 {

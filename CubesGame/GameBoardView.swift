@@ -9,10 +9,6 @@
 import Foundation
 import UIKit
 
-protocol GameBoardViewDelegate: class {
-    func gameBoardDidFill()
-}
-
 class GameBoardView: UIView {
     private var baseSetup: Bool = false
     
@@ -29,8 +25,6 @@ class GameBoardView: UIView {
     private var board: [[Int]] = []            // Row:[Column]
     private var boardColors: [Int:[UIColor]] = [:]  // Row:[Column(Color)]
     private var boardPieces: [[GamePiece]] = []     // boardPieces[Row][Column]
-    
-    weak var delegate: GameBoardViewDelegate?
     
     private var memoisedPatterns:[String:[[String]]] = [:]
     
@@ -166,11 +160,6 @@ extension GameBoardView {
         for c in coords {
             setSpaceOccupied(c)
             pseudoSetCoordColor(c, color: piecesColor)
-        }
-        
-        // check if the board is full
-        if isBoardFull() {
-            delegate?.gameBoardDidFill()
         }
         
         let piecePlusCushion = GameManager.sharedManager.globalPieceSizePlusCushion

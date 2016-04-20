@@ -50,8 +50,6 @@ class GameViewController: UIViewController {
             gameBoardView.backgroundColor = UIColor.clearColor()
             piecesSliderView.backgroundColor = UIColor.clearColor()
             
-            gameBoardView.delegate = self
-            
             // make the share and reset buttons white
             resetImageView.image = resetImageView.image?.imageWithRenderingMode(.AlwaysTemplate)
             resetImageView.tintColor = UIColor.whiteColor()
@@ -96,7 +94,7 @@ class GameViewController: UIViewController {
         // create new piece(s)
         for _ in 0..<difference {
             // gets pattern based on an algorithm with a varied distribution
-            let pattern: Pattern = Pattern(patternOption: getWeightedRandomPattern(boardFill: Double(gameBoardPercentFilled)), rotate: PatternRotateOptions.randomRotation())
+            let pattern: Pattern = Pattern(patternOption: PatternOptions.getWeightedRandomPattern(boardFill: Double(gameBoardPercentFilled)), rotate: PatternRotateOptions.randomRotation())
             
             let piecePattern = GamePiecePatternGenerator.generatePattern(pattern)
             piecePattern.touchesHandler = self
@@ -198,55 +196,6 @@ class GameViewController: UIViewController {
     func getPieceCenterForCurrentPage(gamePiecePattern: GamePiecePattern) -> CGPoint {
         guard let index = currentPage.indexOf(gamePiecePattern) else { fatalError("Attempting to find a center to a piece in the current page, where not found in the current page") }
         return CGPointMake(self.piecesSliderView.bounds.width*(3+5*CGFloat(index))/16, self.piecesSliderView.center.y)
-    }
-    
-    func getWeightedRandomPattern(boardFill boardFill: Double) -> PatternOptions {
-        
-        // cos((2pi/4)x - 2)
-        let boardFillDelta = boardFill*2
-        let distributionEquation: (Double)->Double = { x in
-            return cos(x*M_PI_2-boardFillDelta)
-        }
-        
-        // TODO: move to PatternOptions
-        var patternBucketsByNumber: [Int:[PatternOptions]] = [:]
-        for p in PatternOptions.allPatternOptions() {
-            if patternBucketsByNumber[p.numberOfBlocksRequired()] == nil {
-                patternBucketsByNumber[p.numberOfBlocksRequired()] = [p]
-            }
-            else {
-                patternBucketsByNumber[p.numberOfBlocksRequired()]?.append(p)
-            }
-        }
-        
-        // ratio out all of the buckets
-        var ratioToPatternOptions: [(distPercent: Double, patternOptions: [PatternOptions])] = []
-        var i: Double = 1.0
-        var distSum: Double = 0
-        let numberOfBuckets: Double = Double(patternBucketsByNumber.count)
-        for (_, patternOptions) in patternBucketsByNumber.sort({ $0.0 > $1.0 }) {
-            let ratio: Double = i/numberOfBuckets // 3/7
-            // set a minimum distribution
-            let percentDist = max(0.15, distributionEquation(Double(ratio))*Double(patternOptions.count))
-            ratioToPatternOptions.append((percentDist, patternOptions))
-//            MBLog("\(numberOfBlocksUsed): \(percentDist) with a ratio of \(ratio)")
-            
-            distSum += percentDist
-            i += 1
-        }
-        
-        // now get the ranges for each
-        let randomNumber = Double.random(0.0, distSum)
-        var summingDist: Double = 0
-        for (soloDist, patternOptions) in ratioToPatternOptions.sort({ $0.0 > $1.0 }) {
-            if randomNumber >= summingDist && randomNumber <= summingDist+soloDist {
-                // This will return a number
-                return patternOptions.randomItem()
-            }
-            summingDist += soloDist
-        }
-        
-        return .Single // TODO: implement me
     }
     
     @IBAction func shareButtonPressed(sender: AnyObject) {
@@ -518,18 +467,6 @@ extension GameViewController: TouchesHandler {
                 gamePiecePattern.transform = self.patternsStartingTransforms[gamePiecePattern]!
                 gamePiecePattern.alpha = 1.0
                 }, completion: nil)
-        }
-    }
-}
-
-// MARK: GameBoardViewDelegate
-
-extension GameViewController: GameBoardViewDelegate {
-    func gameBoardDidFill() {
-        UIView.animateWithDuration(1.0, delay: 0.0, options: .CurveEaseInOut, animations: { 
-            self.characterImageView.transform = CGAffineTransformMakeRotation(GamePiecePatternGenerator.degreesToRadians(360*2))
-            }) { (finished) in
-                self.characterImageView.transform = CGAffineTransformIdentity
         }
     }
 }
